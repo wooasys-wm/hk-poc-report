@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>평택RDC - 권역 조절</title>
+<style>
+  :root {
+    --fg: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --line-strong: #9ca3af;
+    --accent: #1d4ed8;
+    --accent-bg: #eff6ff;
+    --good: #047857;
+    --good-bg: #ecfdf5;
+    --warn: #b45309;
+    --warn-bg: #fffbeb;
+    --bad: #b91c1c;
+    --bad-bg: #fef2f2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", "Noto Sans KR", sans-serif;
+    color: var(--fg);
+    background: #ffffff;
+    margin: 0;
+    padding: 2.5rem 1.25rem 4rem;
+    line-height: 1.6;
+    font-size: 14.5px;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  header.cover {
+    border-bottom: 2px solid var(--fg);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  header.cover h1 {
+    font-size: 1.9rem;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+  header.cover .meta {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  header.cover .meta strong { color: var(--fg); }
+  nav.toc {
+    background: #f9fafb;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 0.92rem;
+  }
+  nav.toc h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  nav.toc ol { margin: 0; padding-left: 1.25rem; }
+  nav.toc li { margin: 0.15rem 0; }
+  nav.toc a { color: var(--accent); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  h2 {
+    font-size: 1.3rem;
+    margin: 2.5rem 0 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  h3 {
+    font-size: 1.05rem;
+    margin: 1.6rem 0 0.5rem;
+    color: var(--fg);
+  }
+  h4 {
+    font-size: 0.95rem;
+    margin: 1rem 0 0.4rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  p { margin: 0.5rem 0 0.9rem; }
+  ul, ol { margin: 0.4rem 0 0.9rem; padding-left: 1.4rem; }
+  li { margin: 0.18rem 0; }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    background: #f3f4f6;
+    padding: 0.08em 0.35em;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  table {
+    border-collapse: collapse;
+    margin: 0.6rem 0 1.2rem;
+    font-size: 0.88rem;
+    width: auto;
+    max-width: 100%;
+  }
+  table.full { width: 100%; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 0.35rem 0.6rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f3f4f6;
+    font-weight: 600;
+    text-align: center;
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.ctr, th.ctr { text-align: center; }
+  tr.peak td { background: #fff7ed; }
+  tr.peak td.label { font-weight: 600; }
+  .pill {
+    display: inline-block;
+    padding: 0.05em 0.55em;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .pill.good { background: var(--good-bg); color: var(--good); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .pill.bad  { background: var(--bad-bg);  color: var(--bad); }
+  .pill.info { background: var(--accent-bg); color: var(--accent); }
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.6rem;
+    margin: 0.5rem 0 1.4rem;
+  }
+  .kpi {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+    background: #fff;
+  }
+  .kpi .label {
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .kpi .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-top: 0.2rem;
+  }
+  .kpi .sub {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin-top: 0.1rem;
+  }
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-bg);
+    padding: 0.7rem 1rem;
+    margin: 1rem 0 1.2rem;
+    font-size: 0.92rem;
+  }
+  .callout.good { border-color: var(--good); background: var(--good-bg); }
+  .callout.warn { border-color: var(--warn); background: var(--warn-bg); }
+  .todo {
+    border: 1px dashed var(--warn);
+    background: var(--warn-bg);
+    color: var(--warn);
+    padding: 0.5rem 0.8rem;
+    margin: 0.4rem 0 0.8rem;
+    border-radius: 4px;
+    font-size: 0.88rem;
+  }
+  .todo::before {
+    content: "TODO";
+    display: inline-block;
+    background: var(--warn);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 0.05em 0.45em;
+    border-radius: 3px;
+    margin-right: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+  details {
+    margin: 0.5rem 0 1rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.4rem 0.9rem;
+    background: #fafafa;
+  }
+  details > summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.3rem 0;
+  }
+  .scenarios-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin: 0.6rem 0 1.2rem;
+    align-items: stretch;
+  }
+  .scenarios-grid > .scenario-card {
+    flex: 1 1 320px;
+    min-width: 0;
+    max-width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    background: #fafafa;
+    box-sizing: border-box;
+  }
+  .scenarios-grid > .scenario-card h4 {
+    margin-top: 0;
+    margin-bottom: 0.4rem;
+  }
+  .scenarios-grid > .scenario-card .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .scenarios-grid > .scenario-card table {
+    width: 100%;
+    margin: 0;
+    font-size: 0.82rem;
+    border-collapse: collapse;
+  }
+  .scenarios-grid > .scenario-card th,
+  .scenarios-grid > .scenario-card td {
+    padding: 0.25rem 0.4rem;
+    white-space: nowrap;
+  }
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  @media print {
+    body { padding: 1rem; font-size: 11pt; }
+    nav.toc, details > summary { page-break-after: avoid; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="cover">
+  <h1>평택RDC - 권역 조절</h1>
+</header>
+
+<nav class="toc">
+  <h2>목차</h2>
+  <ol>
+    <li><a href="#s1">개요</a></li>
+    <li><a href="#s2">AS-IS 현황</a></li>
+    <li><a href="#s3">권역조절</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2>1. 개요</h2>
+
+  <h3>1.1 원본 데이터</h3>
+  <ul>
+    <li><code>업체 공유용_배송 실적_2025년 2월 11월_20260317.csv</code></li>
+    <li><code>업체 공유용_배송 단가표_2025년 2월 11월__20260317.csv</code></li>
+  </ul>
+</section>
+
+<section id="s2">
+  <h2>2. AS-IS 현황</h2>
+
+  <h3>2.1 권역 현황</h3>
+  <p><img src="images/map-as-is.png" alt="평택RDC AS-IS 권역 지도" style="max-width: 100%; height: auto;"></p>
+
+  <details>
+    <summary>담당 배송지 상세 (data/평택RDC_담당_배송지.csv)</summary>
+    <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
+      총 1,288 배송지 / 89 시군구 / 6 광역도시
+    </p>
+    <table class="full" style="margin: 0; font-size: 0.88rem;"><thead><tr><th>광역도시</th><th>시군구</th><th class="num">시군구 수</th></tr></thead><tbody><tr><td class="ctr">강원도</td><td>강릉시, 원주시, 철원군</td><td class="num">3</td></tr><tr><td class="ctr">경기도</td><td>가평군, 고양시 덕양구, 고양시 일산동구, 고양시 일산서구, 과천시, 광명시, 광주시, 구리시, 군포시, 김포시, 남양주시, 동두천시, 부천시 소사구, 부천시 오정구, 부천시 원미구, 성남시 분당구, 성남시 수정구, 성남시 중원구, 수원시 권선구, 수원시 영통구, 수원시 장안구, 수원시 팔달구, 시흥시, 안산시 단원구, 안산시 상록구, 안성시, 안양시 동안구, 안양시 만안구, 양주시, 양평군, 연천군, 오산시, 용인시 기흥구, 용인시 수지구, 용인시 처인구, 의왕시, 의정부시, 파주시, 평택시, 포천시, 하남시, 화성시</td><td class="num">42</td></tr><tr><td class="ctr">서울특별시</td><td>강남구, 강동구, 강북구, 강서구, 관악구, 광진구, 구로구, 금천구, 노원구, 도봉구, 동대문구, 동작구, 마포구, 서대문구, 서초구, 성동구, 성북구, 송파구, 양천구, 영등포구, 용산구, 은평구, 종로구, 중구, 중랑구</td><td class="num">25</td></tr><tr><td class="ctr">인천광역시</td><td>강화군, 계양구, 남동구, 동구, 미추홀구, 부평구, 서구, 연수구, 중구</td><td class="num">9</td></tr><tr><td class="ctr">충청남도</td><td>당진시, 서산시, 아산시, 예산군, 천안시 동남구, 천안시 서북구, 태안군, 홍성군</td><td class="num">8</td></tr><tr><td class="ctr">충청북도</td><td>음성군, 진천군</td><td class="num">2</td></tr></tbody></table>
+  </details>
+
+  <h3>2.2 RDC별 담당 현황</h3>
+  <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
+    RDC별 배송지(Ship-to party) 수와 시군구 수 비교. (중부RDC·제주RDC 제외 / Streamlit 1-2 표 기준 — 시군구는 주담당 RDC 정의)
+  </p>
+  <svg viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" style="width:100%; height:auto; font-family:inherit; font-size:11px; max-width:800px;">
+  <line x1="60" y1="350.0" x2="780" y2="350.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="353.0" text-anchor="end" fill="#6b7280">0</text>
+  <line x1="60" y1="304.3" x2="780" y2="304.3" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="307.3" text-anchor="end" fill="#6b7280">200</text>
+  <line x1="60" y1="258.6" x2="780" y2="258.6" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="261.6" text-anchor="end" fill="#6b7280">400</text>
+  <line x1="60" y1="212.9" x2="780" y2="212.9" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="215.9" text-anchor="end" fill="#6b7280">600</text>
+  <line x1="60" y1="167.1" x2="780" y2="167.1" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="170.1" text-anchor="end" fill="#6b7280">800</text>
+  <line x1="60" y1="121.4" x2="780" y2="121.4" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="124.4" text-anchor="end" fill="#6b7280">1,000</text>
+  <line x1="60" y1="75.7" x2="780" y2="75.7" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="78.7" text-anchor="end" fill="#6b7280">1,200</text>
+  <line x1="60" y1="30.0" x2="780" y2="30.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="54" y="33.0" text-anchor="end" fill="#6b7280">1,400</text>
+  <line x1="60" y1="30" x2="60" y2="350" stroke="#9ca3af"/>
+  <line x1="60" y1="350" x2="780" y2="350" stroke="#9ca3af"/>
+  <text x="18" y="190.0" text-anchor="middle" transform="rotate(-90 18 190.0)" fill="#374151">수</text>
+  <rect x="93.0" y="55.6" width="54" height="294.4" fill="#636EFA"/>
+  <text x="120.0" y="51.6" text-anchor="middle" fill="#1f2937" font-weight="600">1,288</text>
+  <rect x="153.0" y="330.1" width="54" height="19.9" fill="#EF553B"/>
+  <text x="180.0" y="326.1" text-anchor="middle" fill="#1f2937" font-weight="600">87</text>
+  <text x="150.0" y="368" text-anchor="middle" fill="#374151">평택RDC</text>
+  <rect x="273.0" y="125.5" width="54" height="224.5" fill="#636EFA"/>
+  <text x="300.0" y="121.5" text-anchor="middle" fill="#1f2937" font-weight="600">982</text>
+  <rect x="333.0" y="333.3" width="54" height="16.7" fill="#EF553B"/>
+  <text x="360.0" y="329.3" text-anchor="middle" fill="#1f2937" font-weight="600">73</text>
+  <text x="330.0" y="368" text-anchor="middle" fill="#374151">칠곡RDC</text>
+  <rect x="453.0" y="190.5" width="54" height="159.5" fill="#636EFA"/>
+  <text x="480.0" y="186.5" text-anchor="middle" fill="#1f2937" font-weight="600">698</text>
+  <rect x="513.0" y="335.6" width="54" height="14.4" fill="#EF553B"/>
+  <text x="540.0" y="331.6" text-anchor="middle" fill="#1f2937" font-weight="600">63</text>
+  <text x="510.0" y="368" text-anchor="middle" fill="#374151">계룡RDC</text>
+  <rect x="633.0" y="285.8" width="54" height="64.2" fill="#636EFA"/>
+  <text x="660.0" y="281.8" text-anchor="middle" fill="#1f2937" font-weight="600">281</text>
+  <rect x="693.0" y="344.5" width="54" height="5.5" fill="#EF553B"/>
+  <text x="720.0" y="340.5" text-anchor="middle" fill="#1f2937" font-weight="600">24</text>
+  <text x="690.0" y="368" text-anchor="middle" fill="#374151">제천RDC</text>
+  <rect x="260.0" y="390" width="14" height="10" fill="#636EFA"/>
+  <text x="280.0" y="399" fill="#374151">배송지 수 (Ship-to party)</text>
+  <rect x="440.0" y="390" width="14" height="10" fill="#EF553B"/>
+  <text x="460.0" y="399" fill="#374151">시군구 수</text>
+</svg>
+  <details>
+    <summary>수치 표 (data/RDC별_담당현황.csv)</summary>
+    <table class="full" style="margin-top:0.6rem; font-size:0.88rem;"><thead><tr><th>RDC</th><th class="num">배송지 수</th><th class="num">시군구 수</th></tr></thead><tbody><tr><td class="ctr">평택RDC</td><td class="num">1,288</td><td class="num">87</td></tr><tr><td class="ctr">칠곡RDC</td><td class="num">982</td><td class="num">73</td></tr><tr><td class="ctr">계룡RDC</td><td class="num">698</td><td class="num">63</td></tr><tr><td class="ctr">제천RDC</td><td class="num">281</td><td class="num">24</td></tr></tbody></table>
+  </details>
+
+  <h3>2.3 RDC별 수요 현황</h3>
+  <p>
+    권역별 수요 분포를 분석한 결과, 평택RDC 권역에서 가장 높은 수요 밀집 현상이 확인되었다.
+    특히 수도권 및 경기 남부 인접 시군구를 중심으로 고수요 지역이 광범위하게 형성되어 있으며,
+    타 RDC 대비 상대적으로 높은 물동량 집중도가 나타난다.
+  </p>
+  <p><img src="images/map-remand-hit.png" alt="시군구별 수요 히트맵" style="max-width: 100%; height: auto;"></p>
+  <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
+    배송지의 물량을 3.5T 기준 정량적으로 산정한 내용입니다.
+  </p>
+  <table class="full" style="font-size:0.9rem;"><thead><tr><th>RDC</th><th class="num">시군구 수</th><th class="num">총수요</th><th class="num">일평균</th><th class="num">비중 (%)</th></tr></thead><tbody><tr><td class="ctr"><strong>평택RDC</strong></td><td class="num">87</td><td class="num">4,125.5</td><td class="num">84.6</td><td class="num">45.3</td></tr><tr><td class="ctr"><strong>칠곡RDC</strong></td><td class="num">73</td><td class="num">2,565.0</td><td class="num">53.0</td><td class="num">28.4</td></tr><tr><td class="ctr"><strong>계룡RDC</strong></td><td class="num">63</td><td class="num">1,705.5</td><td class="num">35.2</td><td class="num">18.8</td></tr><tr><td class="ctr"><strong>제천RDC</strong></td><td class="num">24</td><td class="num">663.2</td><td class="num">14.0</td><td class="num">7.5</td></tr><tr><td class="ctr"><strong>합계</strong></td><td class="num"><strong>247</strong></td><td class="num"><strong>9,059.2</strong></td><td class="num"><strong>186.8</strong></td><td class="num"><strong>100.0</strong></td></tr></tbody></table>
+  <h3>2.4 자연권역 비교</h3>
+  <p>
+    <strong>자연권역</strong>과 <strong>현재 운영(AS-IS)</strong>을 비교하여
+    현재 RDC 권역 구조의 공간적 형상을 파악한다.
+  </p>
+
+  <div class="callout">
+    <strong>자연권역</strong> = 각 시군구를 <strong>소요시간 기준 가장 가까운 RDC에 배정</strong>했을 때의 기준 권역.
+  </div>
+
+  <h4>자연권역 vs AS-IS</h4>
+  <svg viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" style="width:100%; height:auto; font-family:inherit; font-size:11px; max-width:800px;">
+  <line x1="70" y1="350.0" x2="770" y2="350.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="353.0" text-anchor="end" fill="#6b7280">0</text>
+  <line x1="70" y1="286.0" x2="770" y2="286.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="289.0" text-anchor="end" fill="#6b7280">1,000</text>
+  <line x1="70" y1="222.0" x2="770" y2="222.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="225.0" text-anchor="end" fill="#6b7280">2,000</text>
+  <line x1="70" y1="158.0" x2="770" y2="158.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="161.0" text-anchor="end" fill="#6b7280">3,000</text>
+  <line x1="70" y1="94.0" x2="770" y2="94.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="97.0" text-anchor="end" fill="#6b7280">4,000</text>
+  <line x1="70" y1="30.0" x2="770" y2="30.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="33.0" text-anchor="end" fill="#6b7280">5,000</text>
+  <line x1="70" y1="30" x2="70" y2="350" stroke="#9ca3af"/>
+  <line x1="70" y1="350" x2="770" y2="350" stroke="#9ca3af"/>
+  <text x="22" y="190.0" text-anchor="middle" transform="rotate(-90 22 190.0)" fill="#374151">수요 (일평균)</text>
+  <rect x="100.5" y="86.0" width="54" height="264.0" fill="#636EFA"/>
+  <text x="127.5" y="82.0" text-anchor="middle" fill="#1f2937" font-weight="600">4,125.5</text>
+  <rect x="160.5" y="82.1" width="54" height="267.9" fill="#FF6B6B"/>
+  <text x="187.5" y="78.1" text-anchor="middle" fill="#1f2937" font-weight="600">4,186.3</text>
+  <text x="157.5" y="368" text-anchor="middle" fill="#374151">평택RDC</text>
+  <rect x="275.5" y="185.8" width="54" height="164.2" fill="#636EFA"/>
+  <text x="302.5" y="181.8" text-anchor="middle" fill="#1f2937" font-weight="600">2,565.0</text>
+  <rect x="335.5" y="183.2" width="54" height="166.8" fill="#FF6B6B"/>
+  <text x="362.5" y="179.2" text-anchor="middle" fill="#1f2937" font-weight="600">2,606.7</text>
+  <text x="332.5" y="368" text-anchor="middle" fill="#374151">칠곡RDC</text>
+  <rect x="450.5" y="240.8" width="54" height="109.2" fill="#636EFA"/>
+  <text x="477.5" y="236.8" text-anchor="middle" fill="#1f2937" font-weight="600">1,705.5</text>
+  <rect x="510.5" y="245.1" width="54" height="104.9" fill="#FF6B6B"/>
+  <text x="537.5" y="241.1" text-anchor="middle" fill="#1f2937" font-weight="600">1,638.4</text>
+  <text x="507.5" y="368" text-anchor="middle" fill="#374151">계룡RDC</text>
+  <rect x="625.5" y="307.6" width="54" height="42.4" fill="#636EFA"/>
+  <text x="652.5" y="303.6" text-anchor="middle" fill="#1f2937" font-weight="600">663.2</text>
+  <rect x="685.5" y="309.8" width="54" height="40.2" fill="#FF6B6B"/>
+  <text x="712.5" y="305.8" text-anchor="middle" fill="#1f2937" font-weight="600">627.8</text>
+  <text x="682.5" y="368" text-anchor="middle" fill="#374151">제천RDC</text>
+  <rect x="250.0" y="390" width="14" height="10" fill="#636EFA"/>
+  <text x="270.0" y="399" fill="#374151">AS-IS</text>
+  <rect x="430.0" y="390" width="14" height="10" fill="#FF6B6B"/>
+  <text x="450.0" y="399" fill="#374151">자연권역</text>
+</svg>
+
+  <h4>핵심 결론</h4>
+  <ul>
+    <li>전체 247개 시군구 중 <strong>240개(97.2%)가 이미 가장 가까운 RDC에 배정</strong></li>
+    <li>더 가까운 RDC가 있는 시군구: <strong>7개(2.8%)</strong></li>
+    <li><strong>현재 권역 구조는 공간적으로 크게 왜곡되어 있지 않음</strong></li>
+    <li>문제의 본질은 권역 왜곡이 아니라 <strong>수요 자체의 공간 편중</strong> (수도권/경기권 집중)</li>
+  </ul>
+
+</section>
+
+<section id="s3">
+  <h2>3. 권역조절</h2>
+
+  <h3>3.1 개요</h3>
+  <p>
+    평택RDC의 수요 물량을 <strong>5% / 10% / 15% / 20%</strong> 단계적으로 축소하고,
+    축소된 물량을 <strong>계룡RDC</strong>로 이전하는 시나리오를 분석한다.
+    이전 대상이 아닌 칠곡RDC·제천RDC는 현재 시군구 배정을 그대로 유지(동결)하여
+    평택→계룡 단방향 이동 효과만 확인한다.
+  </p>
+  <h3>3.2 이동시간/거리 변화 곡선</h3>
+
+  <div style="display: flex; gap: 0.8rem; align-items: flex-start; flex-wrap: wrap; margin: 0.6rem 0 1rem;">
+    <figure style="flex: 1 1 360px; min-width: 0; margin: 0;">
+      <img src="images/map-as-is.png" alt="현재 운영 권역 지도" style="width: 100%; height: auto; display: block;">
+      <figcaption style="text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem;">현재 운영 (이전 전)</figcaption>
+    </figure>
+    <figure style="flex: 1 1 360px; min-width: 0; margin: 0;">
+      <img src="images/map-s15.png" alt="S15 (15% 축소·이전) 권역 지도" style="width: 100%; height: auto; display: block;">
+      <figcaption style="text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem;">15% 평택→계룡 이전 후</figcaption>
+    </figure>
+  </div>
+
+  <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
+    축소율 5/10/15/20% 시나리오별 평택→계룡 이전 후 전체 RDC 이동시간·거리 증가율
+  </p>
+  <svg viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" style="width:100%; height:auto; font-family:inherit; font-size:11px; max-width:800px;">
+  <line x1="70" y1="350.0" x2="770" y2="350.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="353.0" text-anchor="end" fill="#6b7280">0%</text>
+  <line x1="70" y1="270.0" x2="770" y2="270.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="273.0" text-anchor="end" fill="#6b7280">2%</text>
+  <line x1="70" y1="190.0" x2="770" y2="190.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="193.0" text-anchor="end" fill="#6b7280">4%</text>
+  <line x1="70" y1="110.0" x2="770" y2="110.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="113.0" text-anchor="end" fill="#6b7280">6%</text>
+  <line x1="70" y1="30.0" x2="770" y2="30.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
+  <text x="64" y="33.0" text-anchor="end" fill="#6b7280">8%</text>
+  <line x1="70" y1="30" x2="70" y2="350" stroke="#9ca3af"/>
+  <line x1="70" y1="350" x2="770" y2="350" stroke="#9ca3af"/>
+  <text x="22" y="190.0" text-anchor="middle" transform="rotate(-90 22 190.0)" fill="#374151">증가율 (%)</text>
+  <text x="70.0" y="368" text-anchor="middle" fill="#374151">현 상태</text>
+  <text x="245.0" y="368" text-anchor="middle" fill="#374151">5% 축소</text>
+  <text x="420.0" y="368" text-anchor="middle" fill="#374151">10% 축소</text>
+  <text x="595.0" y="368" text-anchor="middle" fill="#374151">15% 축소</text>
+  <text x="770.0" y="368" text-anchor="middle" fill="#374151">20% 축소</text>
+  <polyline points="70.0,350.0 245.0,316.8 420.0,259.2 595.0,202.0 770.0,113.2" fill="none" stroke="#636EFA" stroke-width="3"/>
+  <circle cx="70.0" cy="350.0" r="5" fill="#636EFA"/>
+  <text x="70.0" y="340.0" text-anchor="middle" fill="#1f2937" font-weight="600">+0.0%</text>
+  <circle cx="245.0" cy="316.8" r="5" fill="#636EFA"/>
+  <text x="245.0" y="306.8" text-anchor="middle" fill="#1f2937" font-weight="600">+0.83%</text>
+  <circle cx="420.0" cy="259.2" r="5" fill="#636EFA"/>
+  <text x="420.0" y="249.2" text-anchor="middle" fill="#1f2937" font-weight="600">+2.27%</text>
+  <circle cx="595.0" cy="202.0" r="5" fill="#636EFA"/>
+  <text x="595.0" y="192.0" text-anchor="middle" fill="#1f2937" font-weight="600">+3.7%</text>
+  <circle cx="770.0" cy="113.2" r="5" fill="#636EFA"/>
+  <text x="770.0" y="103.2" text-anchor="middle" fill="#1f2937" font-weight="600">+5.92%</text>
+  <polyline points="70.0,350.0 245.0,314.0 420.0,256.0 595.0,192.4 770.0,80.8" fill="none" stroke="#EF553B" stroke-width="3" stroke-dasharray="6,4"/>
+  <circle cx="70.0" cy="350.0" r="5" fill="#EF553B"/>
+  <text x="70.0" y="366.0" text-anchor="middle" fill="#1f2937" font-weight="600">+0.0%</text>
+  <circle cx="245.0" cy="314.0" r="5" fill="#EF553B"/>
+  <text x="245.0" y="330.0" text-anchor="middle" fill="#1f2937" font-weight="600">+0.9%</text>
+  <circle cx="420.0" cy="256.0" r="5" fill="#EF553B"/>
+  <text x="420.0" y="272.0" text-anchor="middle" fill="#1f2937" font-weight="600">+2.35%</text>
+  <circle cx="595.0" cy="192.4" r="5" fill="#EF553B"/>
+  <text x="595.0" y="208.4" text-anchor="middle" fill="#1f2937" font-weight="600">+3.94%</text>
+  <circle cx="770.0" cy="80.8" r="5" fill="#EF553B"/>
+  <text x="770.0" y="96.8" text-anchor="middle" fill="#1f2937" font-weight="600">+6.73%</text>
+  <line x1="250.0" y1="395" x2="280.0" y2="395" stroke="#636EFA" stroke-width="3"/>
+  <text x="285.0" y="399" fill="#374151">이동시간 증가율</text>
+  <line x1="425.0" y1="395" x2="455.0" y2="395" stroke="#EF553B" stroke-width="3" stroke-dasharray="6,4"/>
+  <text x="460.0" y="399" fill="#374151">이동거리 증가율</text>
+</svg>
+  <details>
+    <summary>수치 표 (data/평택조절_이동시간거리_증가율.csv)</summary>
+    <table class="full" style="font-size:0.88rem;"><thead><tr><th>시나리오</th><th class="num">이동시간 증가율</th><th class="num">이동거리 증가율</th></tr></thead><tbody><tr><td class="ctr">현 상태</td><td class="num">+0.0%</td><td class="num">+0.0%</td></tr><tr><td class="ctr">5% 축소</td><td class="num">+0.83%</td><td class="num">+0.9%</td></tr><tr><td class="ctr">10% 축소</td><td class="num">+2.27%</td><td class="num">+2.35%</td></tr><tr><td class="ctr">15% 축소</td><td class="num">+3.7%</td><td class="num">+3.94%</td></tr><tr><td class="ctr">20% 축소</td><td class="num">+5.92%</td><td class="num">+6.73%</td></tr></tbody></table>
+  </details>
+
+  <div class="callout">
+    <strong>지표 정의.</strong> 본 곡선은 평택 단독이 아닌 <strong>전체 RDC 네트워크 총 비용</strong>(시군구별 수요 × 배정 RDC까지의 이동시간 또는 거리의 합)을 현재 운영 대비 증감률로 나타낸 값이다.
+  </div>
+
+  <h4>해석</h4>
+  <p>
+    평택의 capacity가 축소되면 일부 시군구가 계룡으로 강제 재배정된다.
+    그 시군구가 원래 평택에 배정되어 있던 이유는 <strong>평택이 더 가까웠기 때문</strong>이며,
+    계룡으로 옮기면 해당 시군구의 이동시간·거리가 늘어난다.
+    평택이 잃는 절약분보다 계룡이 떠안는 추가 거리·시간이 더 크기 때문에,
+    네트워크 전체 합산값은 <strong>증가</strong>한다.
+  </p>
+
+  <div class="callout">
+    <p style="margin: 0 0 0.6rem;">
+      평택RDC 물량 축소 비율에 따른 이동거리 및 이동시간 변화를 비교한 결과,
+      <strong>10% 축소 구간까지는 증가폭이 상대적으로 제한적인 수준으로 유지</strong>되었다.
+    </p>
+    <p style="margin: 0;">
+      반면 <strong>15% 축소 구간부터 이동거리(+3.97%) 및 이동시간(+3.94%) 증가율이 동시에 확대</strong>되기 시작하였으며,
+      20% 축소 시에는 각각 약 <strong>+6% 수준</strong>까지 증가하는 것으로 나타났다.
+    </p>
+  </div>
+
+  <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; margin: 0.8rem 0 1rem;">
+    <figure style="flex: 0 1 360px; min-width: 0; margin: 0;">
+      <img src="images/map-over-s15.png" alt="20% 이상 축소 시 추가 배분 대상" style="width: 100%; height: auto; display: block;">
+      <figcaption style="text-align: center; color: var(--muted); font-size: 0.82rem; margin-top: 0.3rem;">20% 이상 축소 시 추가 배분 대상</figcaption>
+    </figure>
+    <div style="flex: 1 1 320px; min-width: 0;">
+      <p style="margin: 0 0 0.6rem;">
+        평택RDC 물량 축소 비율을 <strong>20% 이상으로 확대할 경우, 추가 이관 대상 시군구는 경기 동·북부 권역까지 확장</strong>되는 것으로 확인되었다.
+      </p>
+      <p style="margin: 0 0 0.4rem; font-size: 0.88rem; color: var(--muted);">주요 대상 지역 · 일평균 3.5T 필요 대수</p>
+      <table style="margin: 0 0 0.8rem; font-size: 0.85rem;">
+        <tbody>
+          <tr><td>(경기) 광주</td><td class="num">1.4대</td></tr>
+          <tr><td>포천</td><td class="num">1.7대</td></tr>
+          <tr><td>양평</td><td class="num">0.3대</td></tr>
+          <tr><td>연천</td><td class="num">0.2대</td></tr>
+          <tr><td>가평</td><td class="num">0.1대</td></tr>
+          <tr><td>철원</td><td class="num">0.1대</td></tr>
+        </tbody>
+      </table>
+      <p style="margin: 0 0 0.6rem;">
+        해당 지역들은 지리적으로 평택보다 북동측에 위치한 권역으로, <strong>제천RDC로 이관하는 것이 효율적</strong>이나
+        현재 시나리오에서는 계룡RDC로만 물량을 이전하도록 제한하였다.
+      </p>
+      <p style="margin: 0 0 0.6rem;">
+        이 물량을 계룡RDC로 이전할 경우, <strong>기존 권역의 공간적 연속성이 단절</strong>된다.
+        특히 경기 북부 및 강원 접경 지역 물량이 남측 권역으로 편입되면서 배송 동선이 비자연적으로 길어지고,
+        권역 구조 또한 비연결 형태로 변화한다.
+      </p>
+      <p style="margin: 0;">
+        그 결과 이동거리·이동시간 증가가 급격히 확대되며 운영 효율 측면에서도 비효율적인 구조가 발생한다.
+        따라서 평택RDC 축소율을 20% 이상으로 확대하는 시나리오는 단순 workload 분산 효과 대비 물류 네트워크 효율 저하 영향이 크며,
+        <strong>운영 관점에서 15%가 현실적인 적용 한계 구간</strong>으로 해석할 수 있다.
+      </p>
+    </div>
+  </div>
+
+  <h4>결론 — 검토 시나리오 선정</h4>
+  <ul>
+    <li>곡선상 <strong>15% 축소부터 변화량이 뚜렷하게 확인</strong>된다.</li>
+    <li>15% 이하 구간은 유의미한 변화량이 뚜렷하지 않아 효과 판단이 어렵다.</li>
+    <li>따라서 <strong>의미 있는 권역 조절 효과를 얻으려면 최소 15% 이상</strong> 축소가 필요하다.</li>
+    <li>다만 <strong>20% 이상</strong> 축소 시에는 단순 시군구 이전 수준을 넘어 <strong>현재 권역 자체를 재편성</strong>해야 하는 부담이 따른다.</li>
+    <li>→ 본 보고서는 <strong>15% 축소안</strong>을 대표 시나리오로 선정하여 상세 분석한다.</li>
+  </ul>
+
+  <h3>3.3 시군구 이동 상세 (15% 축소안)</h3>
+  <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
+    15% 축소안에서 평택RDC → 계룡RDC로 재배정된 10개 시군구. 수요 큰 순.
+  </p>
+  <table class="full" style="font-size:0.88rem; max-width: 500px;"><thead><tr><th>시군구</th><th class="num">수요 (일평균)</th></tr></thead><tbody><tr><td>충청남도 천안시 동남구</td><td class="num">3.6</td></tr><tr><td>충청북도 음성군</td><td class="num">2.5</td></tr><tr><td>충청남도 아산시</td><td class="num">1.6</td></tr><tr><td>충청남도 천안시 서북구</td><td class="num">1.4</td></tr><tr><td>충청남도 당진시</td><td class="num">1.0</td></tr><tr><td>충청남도 서산시</td><td class="num">0.9</td></tr><tr><td>충청남도 홍성군</td><td class="num">0.7</td></tr><tr><td>충청북도 진천군</td><td class="num">0.6</td></tr><tr><td>충청남도 태안군</td><td class="num">0.2</td></tr><tr><td>충청남도 예산군</td><td class="num">0.1</td></tr><tr><td class="ctr"><strong>합계</strong></td><td class="num"><strong>12.6</strong></td></tr></tbody></table>
+  <p style="margin: 0.2rem 0 0; color: var(--muted); font-size: 0.8rem;">
+    수요 : 3.5T 기준으로 일평균 필요 차량 대수
+  </p>
+
+  <h3>3.4 평택 작업량 변화</h3>
+  <p>
+    위 10개 시군구(충청남도 8 + 충청북도 2)를 평택 → 계룡으로 이전했을 때
+    평택RDC가 처리하는 <strong>전체 물량 기준</strong> 실제 운행 변화량(개별 운행이 아닌 합계 평가).
+  </p>
+
+  <table class="full" style="font-size:0.88rem;">
+    <thead>
+      <tr>
+        <th>지표</th>
+        <th class="num">현재 운영 (충청 포함)</th>
+        <th class="num">15% 축소안 (충청 제외)</th>
+        <th class="num">변화</th>
+        <th class="num">변화율</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>운행 횟수 (shipment)</td>
+        <td class="num">4,261</td>
+        <td class="num">3,960</td>
+        <td class="num">−301</td>
+        <td class="num">−7.1%</td>
+      </tr>
+      <tr>
+        <td>운행 시간 (h)</td>
+        <td class="num">6,912.8</td>
+        <td class="num">6,122.0</td>
+        <td class="num">−790.8</td>
+        <td class="num"><strong>−11.4%</strong></td>
+      </tr>
+      <tr>
+        <td>운행 거리 (km)</td>
+        <td class="num">412,988</td>
+        <td class="num">369,768</td>
+        <td class="num">−43,220</td>
+        <td class="num"><strong>−10.5%</strong></td>
+      </tr>
+      <tr>
+        <td>리드타임 (lead = 운행 + 정차, h)</td>
+        <td class="num">15,939.1</td>
+        <td class="num">13,985.7</td>
+        <td class="num">−1,953.4</td>
+        <td class="num"><strong>−12.3%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>운행거리 변화 상세</h4>
+  <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
+    AS-IS의 4,261 shipment을 충청 stop 포함 여부로 3분류하여 절감 효과 출처를 분리.
+  </p>
+
+  <table class="full" style="font-size:0.88rem;">
+    <thead>
+      <tr>
+        <th>분류</th>
+        <th class="num">shipment</th>
+        <th class="num">AS-IS 거리</th>
+        <th class="num">15% 축소안 거리</th>
+        <th>효과</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>충청권 단일 지역구 shipment</strong> (단일 73 + 전체 228)</td>
+        <td class="num">301</td>
+        <td class="num">25,531 km</td>
+        <td class="num">— (삭제)</td>
+        <td>shipment 자체가 사라짐</td>
+      </tr>
+      <tr>
+        <td><strong>충청권 배송지 없는 shipment</strong> (관련 없음)</td>
+        <td class="num">3,749</td>
+        <td class="num">359,478 km</td>
+        <td class="num">359,478 km</td>
+        <td>변화 0</td>
+      </tr>
+      <tr>
+        <td><strong>혼합형 shipment</strong> (충청 + 평택·안성)</td>
+        <td class="num">211</td>
+        <td class="num">27,979 km</td>
+        <td class="num">10,291 km</td>
+        <td>운행 단축 (−17,689 km)</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>합계</strong></td>
+        <td class="num"><strong>4,261</strong></td>
+        <td class="num"><strong>412,988</strong></td>
+        <td class="num"><strong>369,769</strong></td>
+        <td><strong>−43,220 km</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin: 0.6rem 0 0.4rem;">
+    혼합형 shipment(충청 + 평택·안성)에서 <strong>충청권 배송지만 제거</strong>되었을 때
+    남은 shipment의 1건당 운행 거리 변화.
+  </p>
+
+  <table class="full" style="font-size:0.88rem; max-width: 640px;">
+    <thead>
+      <tr>
+        <th>혼합형 shipment 1건당</th>
+        <th class="num">AS-IS</th>
+        <th class="num">15% 축소안</th>
+        <th class="num">변화</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>distance / shipment</td>
+        <td class="num">132.6 km</td>
+        <td class="num">48.8 km</td>
+        <td class="num"><strong>−83.8 km/shipment</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>해석</h4>
+  <ul>
+    <li><strong>운행 횟수 −7.1% 대비 거리 −10.5% / 리드타임 −12.3%</strong> — 충청 권역이 평택 평균보다 외곽이라 단위 운행당 거리·시간 감소율이 더 큼.</li>
+    <li><strong>남은 운행의 1건당 효율도 개선</strong> — ship당 평균 −3.5 km, 리드 −13분. 충청+비충청 혼합 211개 shipment의 충청 정차만 떨어져 나가서 평택 권역 내부 운행이 짧아지는 효과.</li>
+    <li>차량 대수 자체는 1 shipment = 1 vehicle 가정. 평택 fleet 재편에는 별도 검토 필요.</li>
+  </ul>
+
+  <h3>3.5 한계점</h3>
+</section>
+
+</div>
+</body>
+</html>
