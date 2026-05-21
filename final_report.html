@@ -272,7 +272,14 @@
 <section id="s1">
   <h2>1. 개요</h2>
 
-  <h3>1.1 원본 데이터</h3>
+  <p>
+    평택RDC의 운영 부담을 줄이기 위해, "평택의 일부 권역을 계룡으로 이관하면 비용·운영이 개선되는가?" 를 정량적으로 검증하는 것을 목표로 한다.
+  </p>
+  <p>
+    권역 5/10/15/20% 축소 시나리오를 시뮬레이션한 결과,
+    <strong>15%가 의미 있는 변화의 임계점</strong>으로 선정하여 권역 이전시 변화하는 내용을 검토하였다.
+  </p>
+  <h3>원본 데이터</h3>
   <ul>
     <li><code>업체 공유용_배송 실적_2025년 2월 11월_20260317.csv</code></li>
     <li><code>업체 공유용_배송 단가표_2025년 2월 11월__20260317.csv</code></li>
@@ -502,7 +509,13 @@
     이전 대상이 아닌 칠곡RDC·제천RDC는 현재 시군구 배정을 그대로 유지(동결)하여
     평택→계룡 단방향 이동 효과만 확인한다.
   </p>
-  <h3>3.2 이동시간/거리 변화 곡선</h3>
+  <p>
+    단순히 가까운 지역이 아니라, <strong>물량을 고려하여 계룡RDC로 이관하였을 때 운영 부담이 적은 시군구부터 순차적으로 이관</strong>한 시뮬레이션이다.
+  </p>
+  <h3>3.2 이동시간/거리 변화</h3>
+  <p>
+    시군구 물량과 RDC 간 이동거리/시간을 함께 반영한 전체 운영 부담 변화율의 변화
+  </p>
 
   <div style="display: flex; gap: 0.8rem; align-items: flex-start; flex-wrap: wrap; margin: 0.6rem 0 1rem;">
     <figure style="flex: 1 1 360px; min-width: 0; margin: 0;">
@@ -516,7 +529,8 @@
   </div>
 
   <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
-    축소율 5/10/15/20% 시나리오별 평택→계룡 이전 후 전체 RDC 이동시간·거리 증가율
+    축소율 5/10/15/20% 시나리오에서 <strong>수요 가중 이동시간·거리</strong>(시군구별 수요 × RDC↔시군구 거리/시간) 합의 현재 운영 대비 증감률.<br>
+    <em>권역 배정 효율 지표이며, 실제 배차 운행시간/거리는 4장(평택 작업량 변화·운임 변화)에서 별도 산출.</em>
   </p>
   <svg viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" style="width:100%; height:auto; font-family:inherit; font-size:11px; max-width:800px;">
   <line x1="70" y1="350.0" x2="770" y2="350.0" stroke="#e5e7eb" stroke-dasharray="3,3"/>
@@ -573,7 +587,7 @@
     <strong>지표 정의.</strong> 본 곡선은 평택 단독이 아닌 <strong>전체 RDC 네트워크 총 비용</strong>(시군구별 수요 × 배정 RDC까지의 이동시간 또는 거리의 합)을 현재 운영 대비 증감률로 나타낸 값이다.
   </div>
 
-  <h4>해석</h4>
+  <h3>3.3 해석</h3>
   <p>
     평택의 capacity가 축소되면 일부 시군구가 계룡으로 강제 재배정된다.
     그 시군구가 원래 평택에 배정되어 있던 이유는 <strong>평택이 더 가까웠기 때문</strong>이며,
@@ -630,7 +644,23 @@
     </div>
   </div>
 
-  <h3>3.3 시나리오 검토 결과</h3>
+  <h4>축소율별 권역 변화 (참고)</h4>
+  <div style="display: flex; gap: 0.8rem; align-items: flex-start; flex-wrap: wrap; margin: 0.4rem 0 1rem;">
+    <figure style="flex: 1 1 240px; min-width: 0; margin: 0;">
+      <img src="images/map-s05.png" alt="5% 축소 시나리오 권역 지도" style="width: 100%; height: auto; display: block;">
+      <figcaption style="text-align: center; color: var(--muted); font-size: 0.82rem; margin-top: 0.3rem;">5% 축소</figcaption>
+    </figure>
+    <figure style="flex: 1 1 240px; min-width: 0; margin: 0;">
+      <img src="images/map-s10.png" alt="10% 축소 시나리오 권역 지도" style="width: 100%; height: auto; display: block;">
+      <figcaption style="text-align: center; color: var(--muted); font-size: 0.82rem; margin-top: 0.3rem;">10% 축소</figcaption>
+    </figure>
+    <figure style="flex: 1 1 240px; min-width: 0; margin: 0;">
+      <img src="images/map-s20.png" alt="20% 축소 시나리오 권역 지도" style="width: 100%; height: auto; display: block;">
+      <figcaption style="text-align: center; color: var(--muted); font-size: 0.82rem; margin-top: 0.3rem;">20% 축소</figcaption>
+    </figure>
+  </div>
+
+  <h3>3.4 시나리오 검토 결과</h3>
 
   <div class="callout">
     위 내용을 기반으로 <strong>검증 시나리오는 15% 축소안을 선택</strong>하였다.
