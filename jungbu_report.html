@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>중부 RDC</title>
+<style>
+  :root {
+    --fg: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --line-strong: #9ca3af;
+    --accent: #1d4ed8;
+    --accent-bg: #eff6ff;
+    --good: #047857;
+    --good-bg: #ecfdf5;
+    --warn: #b45309;
+    --warn-bg: #fffbeb;
+    --bad: #b91c1c;
+    --bad-bg: #fef2f2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", "Noto Sans KR", sans-serif;
+    color: var(--fg);
+    background: #ffffff;
+    margin: 0;
+    padding: 2.5rem 1.25rem 4rem;
+    line-height: 1.6;
+    font-size: 14.5px;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  header.cover {
+    border-bottom: 2px solid var(--fg);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  header.cover h1 {
+    font-size: 1.9rem;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+  header.cover .meta {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  header.cover .meta strong { color: var(--fg); }
+  nav.toc {
+    background: #f9fafb;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 0.92rem;
+  }
+  nav.toc h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  nav.toc ol { margin: 0; padding-left: 1.25rem; }
+  nav.toc li { margin: 0.15rem 0; }
+  nav.toc a { color: var(--accent); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  h2 {
+    font-size: 1.3rem;
+    margin: 2.5rem 0 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  h3 {
+    font-size: 1.05rem;
+    margin: 1.6rem 0 0.5rem;
+    color: var(--fg);
+  }
+  h4 {
+    font-size: 0.95rem;
+    margin: 1rem 0 0.4rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  p { margin: 0.5rem 0 0.9rem; }
+  ul, ol { margin: 0.4rem 0 0.9rem; padding-left: 1.4rem; }
+  li { margin: 0.18rem 0; }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    background: #f3f4f6;
+    padding: 0.08em 0.35em;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  table {
+    border-collapse: collapse;
+    margin: 0.6rem 0 1.2rem;
+    font-size: 0.88rem;
+    width: auto;
+    max-width: 100%;
+  }
+  table.full { width: 100%; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 0.35rem 0.6rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f3f4f6;
+    font-weight: 600;
+    text-align: center;
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.ctr, th.ctr { text-align: center; }
+  tr.peak td { background: #fff7ed; }
+  tr.peak td.label { font-weight: 600; }
+  .pill {
+    display: inline-block;
+    padding: 0.05em 0.55em;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .pill.good { background: var(--good-bg); color: var(--good); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .pill.bad  { background: var(--bad-bg);  color: var(--bad); }
+  .pill.info { background: var(--accent-bg); color: var(--accent); }
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.6rem;
+    margin: 0.5rem 0 1.4rem;
+  }
+  .kpi {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+    background: #fff;
+  }
+  .kpi .label {
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .kpi .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-top: 0.2rem;
+  }
+  .kpi .sub {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin-top: 0.1rem;
+  }
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-bg);
+    padding: 0.7rem 1rem;
+    margin: 1rem 0 1.2rem;
+    font-size: 0.92rem;
+  }
+  .callout.good { border-color: var(--good); background: var(--good-bg); }
+  .callout.warn { border-color: var(--warn); background: var(--warn-bg); }
+  details {
+    margin: 0.5rem 0 1rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.4rem 0.9rem;
+    background: #fafafa;
+  }
+  details > summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.3rem 0;
+  }
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  @media print {
+    body { padding: 1rem; font-size: 11pt; }
+    nav.toc, details > summary { page-break-after: avoid; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="cover">
+  <h1>중부 RDC - 운영 차량 산정 보고서</h1>
+</header>
+
+<nav class="toc">
+  <h2>목차</h2>
+  <ol>
+    <li><a href="#s1">개요</a></li>
+    <li><a href="#s2">As-Is baseline</a></li>
+    <li><a href="#s3">비용 산출 방식</a></li>
+    <li><a href="#s4">톤급별 비용 구조</a></li>
+    <li><a href="#s5">검증 방식</a></li>
+    <li><a href="#s6">검증 대상 fleet (최종)</a></li>
+    <li><a href="#s7">vroom replay 검증 결과</a></li>
+    <li><a href="#s8">일자별 input vs 사용 차대수</a></li>
+    <li><a href="#s9">결론</a></li>
+    <li><a href="#s10">참조 파일</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2>1. 개요</h2>
+
+  <h3>1.1 원본 데이터</h3>
+  <ul>
+    <li><code>업체 공유용_배송 실적_2025년 2월 11월_20260317.csv</code></li>
+    <li><code>업체 공유용_배송 단가표_2025년 2월 11월__20260317.csv</code></li>
+  </ul>
+
+  <h3>1.2 사용 데이터</h3>
+  <p><strong>2025년 11월 데이터만 사용</strong>.</p>
+
+  <h3>1.3 제외 데이터</h3>
+
+  <h4>제주 11RB / On-site Delivery 제외</h4>
+  <p>영향건수: 제주 2 deliveries / On-site 4 deliveries.</p>
+  <ul>
+    <li>배송 거리 유추할 수 없음으로 제외</li>
+  </ul>
+
+  <h4>2월 이력 제외</h4>
+  <p>영향건수: 14건 모두 단일 배송 (1 shipment = 1 delivery = 1 stop).</p>
+  <ul>
+    <li>truck_type: 3.5T</li>
+    <li>ship-to 지역: 대전 대덕구 (1곳 단일 배송지)</li>
+    <li>dbs_km: 40.0 km (대덕구 배송 거리 동일)</li>
+  </ul>
+
+  <h4>3PL 이력 제외</h4>
+  <p>영향건수: 310건 (shipment 16.8% / delivery 5.5%).</p>
+  <ul>
+    <li>한반도 외곽 (강원 동해안·남해안 / 산악) 의 단일 배송지 (1 shipment = 1 delivery)</li>
+    <li>동일 SKU 타이어 2 ~ 4개 (median 3개)</li>
+    <li>평균 편도 210 km (Max 313 km)</li>
+  </ul>
+
+  <h3>1.4 11월 톤급별 운임</h3>
+  <p>배송단가표의 11월 중부 RDC 건 사용. 총 <strong>5,309 deliveries</strong> (1 delivery = 1 ship-to) / <strong>315,120,400원</strong>.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>truck_type</th>
+        <th class="num">deliveries</th>
+        <th class="num">shipments</th>
+        <th class="num">총 운송비(원)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="ctr">1T</td><td class="num">2,202</td><td class="num">819</td><td class="num">135,625,100</td></tr>
+      <tr><td class="ctr">3.5T</td><td class="num">1,407</td><td class="num">417</td><td class="num">84,301,000</td></tr>
+      <tr><td class="ctr">5T</td><td class="num">472</td><td class="num">107</td><td class="num">28,359,300</td></tr>
+      <tr><td class="ctr">8T</td><td class="num">1,131</td><td class="num">159</td><td class="num">58,052,000</td></tr>
+      <tr><td class="ctr">11T</td><td class="num">97</td><td class="num">22</td><td class="num">8,783,000</td></tr>
+      <tr><td class="ctr"><strong>합계</strong></td><td class="num"><strong>5,309</strong></td><td class="num"><strong>1,524</strong></td><td class="num"><strong>315,120,400</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s2">
+  <h2>2. As-Is baseline</h2>
+  <p>비교 baseline 은 <code>03_result/38_jungbu_asis_operation.md</code> 의 As-Is 운영이다. shipment 1건 = 차량 운행 1건 으로 정의된다.</p>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">호출 일자</div><div class="value">27일</div></div>
+    <div class="kpi"><div class="label">총 shipment</div><div class="value">1,524</div><div class="sub">= 차량 운행 수</div></div>
+    <div class="kpi"><div class="label">OSRM NN 거리</div><div class="value">292,158 km</div></div>
+    <div class="kpi"><div class="label">OSRM NN 시간</div><div class="value">4,203.3 h</div></div>
+    <div class="kpi"><div class="label">실 dbs_km</div><div class="value">305,830 km</div></div>
+    <div class="kpi"><div class="label">실 운임</div><div class="value">315,120,400원</div><div class="sub">3.15억</div></div>
+  </div>
+
+  <h3>2.1 톤급별 실 운임</h3>
+  <table>
+    <thead>
+      <tr><th>톤급</th><th class="num">shipment 수</th><th class="num">총 운임(원)</th><th class="num">평균 운임 / shipment</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="ctr">1T</td><td class="num">819</td><td class="num">135,625,100</td><td class="num">165,599</td></tr>
+      <tr><td class="ctr">3.5T</td><td class="num">417</td><td class="num">84,301,000</td><td class="num">202,160</td></tr>
+      <tr><td class="ctr">5T</td><td class="num">107</td><td class="num">28,359,300</td><td class="num">265,041</td></tr>
+      <tr><td class="ctr">8T</td><td class="num">159</td><td class="num">58,052,000</td><td class="num">365,107</td></tr>
+      <tr><td class="ctr">11T</td><td class="num">22</td><td class="num">8,783,000</td><td class="num">399,227</td></tr>
+      <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>1,524</strong></td><td class="num"><strong>315,120,400</strong></td><td class="num"><strong>206,772</strong></td></tr>
+    </tbody>
+  </table>
+  <p>As-Is 는 1T 비중이 압도적이며, 총액에서도 1T 가 가장 큰 비중을 차지한다.</p>
+</section>
+
+<section id="s3">
+  <h2>3. 비용 산출 방식</h2>
+  <p>보고서 본문에는 두 가지 비용이 등장한다. 정의가 다르므로 반드시 분리한다.</p>
+
+  <h3>3.1 실 운임 (실 비용 baseline)</h3>
+  <p>원천 파일: <code>app/db/jungbu_real_fare_by_shipment_nov_dec.csv</code>. shipment 단위 운임 파일이며, 각 shipment 의 실제 톤급 / 실 거리 (<code>dbs_km</code>) 에 11월 단가표 bucket 을 적용한 <code>fare_krw</code> 가 기록되어 있다.</p>
+  <p><strong>정의</strong> &nbsp;실 비용 = shipment별 <code>fare_krw</code> 를 <code>job_date</code> 기준으로 합산한 일자별 총액.</p>
+
+  <h3>3.2 vroom lookup 운임</h3>
+  <p>원천 파일: <code>app/db/fare_2025_11.csv</code> + <code>app/cost/fare_lookup.py</code>. vroom 이 만든 각 route 의 거리를 단가표 bucket 에 다시 넣어 운임을 산출한다.</p>
+  <p><strong>정의</strong> &nbsp;vroom lookup 운임 = 각 route 거리 × 해당 톤급의 중부 11월 단가표 bucket fare 의 합.</p>
+
+  <div class="callout">
+    <strong>표현 규칙</strong>
+    <ul style="margin: 0.4rem 0 0;">
+      <li>실 비용 / 실 운임 = 실 shipment, 실 톤급, 실 dbs_km 기준</li>
+      <li>vroom 운임 / lookup 운임 = 최적화 route, vroom route 거리, route 톤급 기준</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s4">
+  <h2>4. 톤급별 비용 구조</h2>
+
+  <h3>4.1 As-Is 실 비용 (재게재)</h3>
+  <table>
+    <thead><tr><th>톤급</th><th class="num">총 운임(원)</th><th class="num">평균 운임 / shipment</th></tr></thead>
+    <tbody>
+      <tr><td class="ctr">1T</td><td class="num">135,625,100</td><td class="num">165,599</td></tr>
+      <tr><td class="ctr">3.5T</td><td class="num">84,301,000</td><td class="num">202,160</td></tr>
+      <tr><td class="ctr">5T</td><td class="num">28,359,300</td><td class="num">265,041</td></tr>
+      <tr><td class="ctr">8T</td><td class="num">58,052,000</td><td class="num">365,107</td></tr>
+      <tr><td class="ctr">11T</td><td class="num">8,783,000</td><td class="num">399,227</td></tr>
+      <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>315,120,400</strong></td><td class="num"><strong>206,772</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 운영안별 lookup 운임 (B/C 검증 최종)</h3>
+
+  <h4>fare</h4>
+  <table>
+    <thead><tr><th>톤급</th><th class="num">routes</th><th class="num">fare 합(원)</th><th class="num">평균 fare / route</th></tr></thead>
+    <tbody>
+      <tr><td class="ctr">1T</td><td class="num">33</td><td class="num">5,215,300</td><td class="num">158,039</td></tr>
+      <tr><td class="ctr">3.5T</td><td class="num">140</td><td class="num">37,463,100</td><td class="num">267,594</td></tr>
+      <tr><td class="ctr">5T</td><td class="num">130</td><td class="num">43,584,200</td><td class="num">335,263</td></tr>
+      <tr><td class="ctr">8T</td><td class="num">192</td><td class="num">77,312,900</td><td class="num">402,671</td></tr>
+      <tr><td class="ctr">11T</td><td class="num">92</td><td class="num">39,882,800</td><td class="num">433,509</td></tr>
+      <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>587</strong></td><td class="num"><strong>203,458,300</strong></td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+
+  <h4>version_35_5</h4>
+  <table>
+    <thead><tr><th>톤급</th><th class="num">routes</th><th class="num">fare 합(원)</th><th class="num">평균 fare / route</th></tr></thead>
+    <tbody>
+      <tr><td class="ctr">1T</td><td class="num">18</td><td class="num">1,913,200</td><td class="num">106,289</td></tr>
+      <tr><td class="ctr">3.5T</td><td class="num">168</td><td class="num">48,576,700</td><td class="num">289,147</td></tr>
+      <tr><td class="ctr">5T</td><td class="num">165</td><td class="num">59,966,300</td><td class="num">363,432</td></tr>
+      <tr><td class="ctr">8T</td><td class="num">192</td><td class="num">72,399,800</td><td class="num">377,082</td></tr>
+      <tr><td class="ctr">11T</td><td class="num">64</td><td class="num">25,441,000</td><td class="num">397,516</td></tr>
+      <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>607</strong></td><td class="num"><strong>208,297,000</strong></td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+
+  <h4>version_1_35</h4>
+  <table>
+    <thead><tr><th>톤급</th><th class="num">routes</th><th class="num">fare 합(원)</th><th class="num">평균 fare / route</th></tr></thead>
+    <tbody>
+      <tr><td class="ctr">1T</td><td class="num">331</td><td class="num">66,778,700</td><td class="num">201,748</td></tr>
+      <tr><td class="ctr">3.5T</td><td class="num">164</td><td class="num">56,915,000</td><td class="num">347,043</td></tr>
+      <tr><td class="ctr">5T</td><td class="num">158</td><td class="num">52,936,600</td><td class="num">335,042</td></tr>
+      <tr><td class="ctr">8T</td><td class="num">173</td><td class="num">61,391,600</td><td class="num">354,865</td></tr>
+      <tr><td class="ctr">11T</td><td class="num">31</td><td class="num">11,683,400</td><td class="num">376,884</td></tr>
+      <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>857</strong></td><td class="num"><strong>249,705,300</strong></td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.3 해석</h3>
+  <ul>
+    <li><strong>As-Is</strong> 실 운임은 1T 중심 구조라 1T 총액 비중이 크다.</li>
+    <li><code>fare</code> 는 큰 차 통합이 강해 8T / 11T 비중이 커지고 총 lookup 운임이 가장 낮다.</li>
+    <li><code>version_35_5</code> 는 3.5T / 5T 비용 비중이 커진다.</li>
+    <li><code>version_1_35</code> 는 1T 분산 운영으로 1T 비용 비중이 다시 커지고, 총 lookup 운임이 실 운임에 가장 가깝다.</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2>5. 검증 방식</h2>
+  <ul>
+    <li>기존 <code>v12_2pass</code> 의 11T hardcoding / priority / DELIVERY_OVERRIDES / cap / max_distance 룰 유지.</li>
+    <li>변경한 것은 fleet 수와 산출 경로뿐.</li>
+    <li>1차 (pass1) 는 <strong>B(Standard) fleet</strong> 로 27일 전 일자 replay.</li>
+    <li>2차 (pass2) 는 B 안에서 미배차가 발생한 일자에만 <strong>C(Robust) fleet</strong> 로 full-day rerun, B 정상 일자 + C rerun 결과를 결합.</li>
+    <li>판단 기준: 미배차 수 / 메저 100% 초과 route 수 / 병목 날짜 집중 여부.</li>
+  </ul>
+  <p>1차 Peak fleet (B 의 1T 만 증차) 검증 결과 세 변형 모두 일부 일자에서 미배차가 남았다 (fare 10건, version_35_5 11건, version_1_35 2건). 미배차 일자의 공통 패턴은 <strong>3.5T + 5T + 8T + 11T 동시 만재</strong>. 8T(9) / 11T(4) 제약 하에서 Peak fleet 의 3.5T / 5T (필요 시 1T) 만 증차하여 재실행, 세 변형 모두 <strong>미배차 0</strong> 도달.</p>
+</section>
+
+<section id="s6">
+  <h2>6. 검증 대상 fleet (최종)</h2>
+  <p>톤급 순서는 모두 <strong>1T / 3.5T / 5T / 8T / 11T</strong>.</p>
+  <table class="full">
+    <thead>
+      <tr>
+        <th>운영안</th>
+        <th>상시 fleet (B)</th>
+        <th>Peak fleet (C, 최종)</th>
+        <th>1차 → 최종 변경</th>
+        <th>해석</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ctr"><strong>fare</strong></td>
+        <td class="ctr">3 / 6 / 6 / 9 / 4 = 28대</td>
+        <td class="ctr"><strong>10 / 8 / 8 / 9 / 4 = 39대</strong></td>
+        <td>3.5T +2, 5T +2</td>
+        <td>현실 운임 기준 비용 최적화안</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>version_35_5</strong></td>
+        <td class="ctr">2 / 6 / 6 / 9 / 4 = 27대</td>
+        <td class="ctr"><strong>10 / 8 / 8 / 9 / 4 = 39대</strong></td>
+        <td>1T +1, 3.5T +2, 5T +2</td>
+        <td>3.5T / 5T 주력 운영안</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>version_1_35</strong></td>
+        <td class="ctr">16 / 6 / 6 / 9 / 3 = 40대</td>
+        <td class="ctr"><strong>18 / 7 / 7 / 9 / 4 = 45대</strong></td>
+        <td>1T +1, 3.5T +1, 5T +1</td>
+        <td>1T / 3.5T 주력 운영안</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s7">
+  <h2>7. vroom replay 검증 결과</h2>
+
+  <table class="full">
+    <thead>
+      <tr>
+        <th>운영안</th>
+        <th class="num">총 routes</th>
+        <th class="num">총 거리(km)</th>
+        <th class="num">미배차</th>
+        <th class="num">메저 &gt;100%</th>
+        <th class="num">평균 메저%</th>
+        <th class="num">lookup 운임</th>
+        <th class="num">fare/real</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ctr"><strong>fare</strong></td>
+        <td class="num">587</td>
+        <td class="num">138,430</td>
+        <td class="num"><span class="pill good">0</span></td>
+        <td class="num"><span class="pill good">0</span></td>
+        <td class="num">82.0</td>
+        <td class="num">203,458,300</td>
+        <td class="num">64.6%</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>version_35_5</strong></td>
+        <td class="num">607</td>
+        <td class="num">145,210</td>
+        <td class="num"><span class="pill good">0</span></td>
+        <td class="num"><span class="pill good">0</span></td>
+        <td class="num">82.3</td>
+        <td class="num">208,297,000</td>
+        <td class="num">66.1%</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>version_1_35</strong></td>
+        <td class="num">857</td>
+        <td class="num">205,254</td>
+        <td class="num"><span class="pill good">0</span></td>
+        <td class="num"><span class="pill warn">1</span></td>
+        <td class="num">85.5</td>
+        <td class="num">249,705,300</td>
+        <td class="num">79.2%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>7.1 fare</h3>
+  <ul>
+    <li>상시 fleet: <code>3 / 6 / 6 / 9 / 4 = 28대</code></li>
+    <li>Peak fleet (최종): <code>10 / 8 / 8 / 9 / 4 = 39대</code> (1차 35대에서 3.5T +2, 5T +2)</li>
+    <li>최종 결과: 미배차 <strong>0건</strong>, 메저 100% 초과 <strong>0건</strong>, 평균 메저% <strong>82.0</strong></li>
+    <li>1차 Peak (35대) 시 11-06(2) / 11-12(4) / 11-20(1) / 11-28(3) 의 4일자에서 10건 미배차. 모두 3.5T+5T+8T+11T 동시 만재 패턴.</li>
+    <li>비용 최적화 reference 안.</li>
+  </ul>
+
+  <h3>7.2 version_35_5</h3>
+  <ul>
+    <li>상시 fleet: <code>2 / 6 / 6 / 9 / 4 = 27대</code></li>
+    <li>Peak fleet (최종): <code>10 / 8 / 8 / 9 / 4 = 39대</code> (1차 34대에서 1T +1, 3.5T +2, 5T +2)</li>
+    <li>최종 결과: 미배차 <strong>0건</strong>, 메저 100% 초과 <strong>0건</strong>, 평균 메저% <strong>82.3</strong></li>
+    <li>1차 Peak (34대) 시 11건 미배차. 1T 도 11-12 / 11-28 만재였기 때문에 1T +1 함께 적용.</li>
+    <li>3.5T / 5T 주력 운영 철학.</li>
+  </ul>
+
+  <h3>7.3 version_1_35</h3>
+  <ul>
+    <li>상시 fleet: <code>16 / 6 / 6 / 9 / 3 = 40대</code></li>
+    <li>Peak fleet (최종): <code>18 / 7 / 7 / 9 / 4 = 45대</code> (1차 42대에서 1T +1, 3.5T +1, 5T +1)</li>
+    <li>최종 결과: 미배차 <strong>0건</strong>, 메저 100% 초과 <strong>1건</strong> (12-01 5T_26 = 101.39%), 평균 메저% <strong>85.5</strong></li>
+    <li>1차 Peak (42대) 시 11-12(1), 11-28(1) 의 2건 미배차. 1T 11-12 17/17 만재였기 때문에 1T +1 함께 적용.</li>
+    <li>실 운임 패턴에 가장 가까움 (lookup 2.50억 / 실 3.15억의 79.2%).</li>
+  </ul>
+</section>
+
+<section id="s8">
+  <h2>8. 일자별 input vs 사용 차대수</h2>
+  <p>표 형식은 <code>in/used</code>. <strong>굵은 줄</strong> 은 Peak 대수가 적용된 일자.</p>
+
+  <details open>
+    <summary>8.1 fare (587 routes / 138,430 km / 미배차 0)</summary>
+    <table class="full">
+      <thead>
+        <tr><th>date</th><th>1T</th><th>3.5T</th><th>5T</th><th>8T</th><th>11T</th><th>total</th><th class="num">util%</th><th class="num">unas</th><th>구분</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="ctr">2025-11-01</td><td class="ctr">3/2</td><td class="ctr">6/3</td><td class="ctr">6/1</td><td class="ctr">9/1</td><td class="ctr">4/1</td><td class="ctr">28/8</td><td class="num">28.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-03</td><td class="ctr">3/1</td><td class="ctr">6/4</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">28/23</td><td class="num">82.1</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-04</td><td class="ctr">3/1</td><td class="ctr">6/5</td><td class="ctr">6/3</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">28/21</td><td class="num">75.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-05</td><td class="ctr">3/1</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">28/26</td><td class="num">92.9</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">10/2</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/31</td><td class="num">79.5</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-07</td><td class="ctr">3/0</td><td class="ctr">6/4</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">28/23</td><td class="num">82.1</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-08</td><td class="ctr">3/1</td><td class="ctr">6/0</td><td class="ctr">6/3</td><td class="ctr">9/5</td><td class="ctr">4/2</td><td class="ctr">28/11</td><td class="num">39.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-10</td><td class="ctr">3/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/7</td><td class="ctr">4/3</td><td class="ctr">28/22</td><td class="num">78.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-11</td><td class="ctr">3/1</td><td class="ctr">6/6</td><td class="ctr">6/3</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">28/22</td><td class="num">78.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">10/6</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/35</td><td class="num">89.7</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-13</td><td class="ctr">3/1</td><td class="ctr">6/5</td><td class="ctr">6/4</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">28/22</td><td class="num">78.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-14</td><td class="ctr">3/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">28/25</td><td class="num">89.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-15</td><td class="ctr">3/0</td><td class="ctr">6/5</td><td class="ctr">6/6</td><td class="ctr">9/4</td><td class="ctr">4/0</td><td class="ctr">28/15</td><td class="num">53.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-17</td><td class="ctr">3/2</td><td class="ctr">6/5</td><td class="ctr">6/2</td><td class="ctr">9/7</td><td class="ctr">4/4</td><td class="ctr">28/20</td><td class="num">71.4</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-18</td><td class="ctr">3/1</td><td class="ctr">6/6</td><td class="ctr">6/3</td><td class="ctr">9/7</td><td class="ctr">4/4</td><td class="ctr">28/21</td><td class="num">75.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-19</td><td class="ctr">3/0</td><td class="ctr">6/6</td><td class="ctr">6/4</td><td class="ctr">9/4</td><td class="ctr">4/4</td><td class="ctr">28/18</td><td class="num">64.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">10/2</td><td class="ctr">8/7</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/30</td><td class="num">76.9</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-21</td><td class="ctr">3/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">28/25</td><td class="num">89.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-22</td><td class="ctr">3/3</td><td class="ctr">6/2</td><td class="ctr">6/3</td><td class="ctr">9/5</td><td class="ctr">4/4</td><td class="ctr">28/17</td><td class="num">60.7</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-24</td><td class="ctr">3/0</td><td class="ctr">6/6</td><td class="ctr">6/5</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">28/23</td><td class="num">82.1</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-25</td><td class="ctr">3/0</td><td class="ctr">6/6</td><td class="ctr">6/4</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">28/22</td><td class="num">78.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">10/0</td><td class="ctr">8/7</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/28</td><td class="num">71.8</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-27</td><td class="ctr">3/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">28/25</td><td class="num">89.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">10/8</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/37</td><td class="num">94.9</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-29</td><td class="ctr">3/1</td><td class="ctr">6/5</td><td class="ctr">6/3</td><td class="ctr">9/6</td><td class="ctr">4/1</td><td class="ctr">28/16</td><td class="num">57.1</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-01</td><td class="ctr">3/0</td><td class="ctr">6/2</td><td class="ctr">6/4</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">28/18</td><td class="num">64.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-02</td><td class="ctr">3/0</td><td class="ctr">6/2</td><td class="ctr">6/0</td><td class="ctr">9/0</td><td class="ctr">4/1</td><td class="ctr">28/3</td><td class="num">10.7</td><td class="num">0</td><td class="ctr">상시</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <details>
+    <summary>8.2 version_35_5 (607 routes / 145,210 km / 미배차 0)</summary>
+    <table class="full">
+      <thead>
+        <tr><th>date</th><th>1T</th><th>3.5T</th><th>5T</th><th>8T</th><th>11T</th><th>total</th><th class="num">util%</th><th class="num">unas</th><th>구분</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="ctr">2025-11-01</td><td class="ctr">2/0</td><td class="ctr">6/3</td><td class="ctr">6/5</td><td class="ctr">9/0</td><td class="ctr">4/0</td><td class="ctr">27/8</td><td class="num">29.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-03</td><td class="ctr">2/1</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/7</td><td class="ctr">4/4</td><td class="ctr">27/24</td><td class="num">88.9</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-04</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/7</td><td class="ctr">4/3</td><td class="ctr">27/22</td><td class="num">81.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-05</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">27/25</td><td class="num">92.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">10/1</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/30</td><td class="num">76.9</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-07</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/3</td><td class="ctr">27/24</td><td class="num">88.9</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-08</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/3</td><td class="ctr">4/0</td><td class="ctr">27/15</td><td class="num">55.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-10</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/2</td><td class="ctr">27/22</td><td class="num">81.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-11</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/2</td><td class="ctr">27/22</td><td class="num">81.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">10/5</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/34</td><td class="num">87.2</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-13</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/3</td><td class="ctr">27/23</td><td class="num">85.2</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-14</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">27/25</td><td class="num">92.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-15</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/3</td><td class="ctr">4/0</td><td class="ctr">27/15</td><td class="num">55.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-17</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/6</td><td class="ctr">4/2</td><td class="ctr">27/20</td><td class="num">74.1</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-18</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/2</td><td class="ctr">27/22</td><td class="num">81.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-19</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/0</td><td class="ctr">27/20</td><td class="num">74.1</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">10/0</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/29</td><td class="num">74.4</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-21</td><td class="ctr">2/1</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">27/26</td><td class="num">96.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-22</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/7</td><td class="ctr">4/0</td><td class="ctr">27/19</td><td class="num">70.4</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-24</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/4</td><td class="ctr">27/24</td><td class="num">88.9</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-25</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/2</td><td class="ctr">27/23</td><td class="num">85.2</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">10/0</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/29</td><td class="num">74.4</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-27</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">27/25</td><td class="num">92.6</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">10/10</td><td class="ctr">8/8</td><td class="ctr">8/8</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">39/39</td><td class="num">100.0</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-29</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/4</td><td class="ctr">4/0</td><td class="ctr">27/16</td><td class="num">59.3</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-01</td><td class="ctr">2/0</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">4/1</td><td class="ctr">27/21</td><td class="num">77.8</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-02</td><td class="ctr">2/0</td><td class="ctr">6/5</td><td class="ctr">6/0</td><td class="ctr">9/0</td><td class="ctr">4/0</td><td class="ctr">27/5</td><td class="num">18.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <details>
+    <summary>8.3 version_1_35 (857 routes / 205,254 km / 미배차 0)</summary>
+    <table class="full">
+      <thead>
+        <tr><th>date</th><th>1T</th><th>3.5T</th><th>5T</th><th>8T</th><th>11T</th><th>total</th><th class="num">util%</th><th class="num">unas</th><th>구분</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="ctr">2025-11-01</td><td class="ctr">16/1</td><td class="ctr">6/6</td><td class="ctr">6/2</td><td class="ctr">9/0</td><td class="ctr">3/0</td><td class="ctr">40/9</td><td class="num">22.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-03</td><td class="ctr">18/14</td><td class="ctr">7/7</td><td class="ctr">7/7</td><td class="ctr">9/3</td><td class="ctr">4/4</td><td class="ctr">45/35</td><td class="num">77.8</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-04</td><td class="ctr">16/13</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">3/0</td><td class="ctr">40/33</td><td class="num">82.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-05</td><td class="ctr">16/16</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">3/2</td><td class="ctr">40/39</td><td class="num">97.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">18/15</td><td class="ctr">7/7</td><td class="ctr">7/7</td><td class="ctr">9/9</td><td class="ctr">4/3</td><td class="ctr">45/41</td><td class="num">91.1</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-07</td><td class="ctr">16/14</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">3/1</td><td class="ctr">40/36</td><td class="num">90.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-08</td><td class="ctr">16/8</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/1</td><td class="ctr">3/0</td><td class="ctr">40/21</td><td class="num">52.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-10</td><td class="ctr">16/13</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/7</td><td class="ctr">3/0</td><td class="ctr">40/32</td><td class="num">80.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-11</td><td class="ctr">16/13</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">3/0</td><td class="ctr">40/33</td><td class="num">82.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">18/13</td><td class="ctr">7/7</td><td class="ctr">7/7</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">45/40</td><td class="num">88.9</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-13</td><td class="ctr">16/15</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">3/0</td><td class="ctr">40/35</td><td class="num">87.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-14</td><td class="ctr">16/14</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">3/2</td><td class="ctr">40/37</td><td class="num">92.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-15</td><td class="ctr">16/10</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/1</td><td class="ctr">3/0</td><td class="ctr">40/23</td><td class="num">57.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-17</td><td class="ctr">16/11</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/6</td><td class="ctr">3/0</td><td class="ctr">40/29</td><td class="num">72.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-18</td><td class="ctr">16/13</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/6</td><td class="ctr">3/1</td><td class="ctr">40/32</td><td class="num">80.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-19</td><td class="ctr">16/12</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/5</td><td class="ctr">3/0</td><td class="ctr">40/29</td><td class="num">72.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">18/16</td><td class="ctr">7/7</td><td class="ctr">7/7</td><td class="ctr">9/8</td><td class="ctr">4/3</td><td class="ctr">45/41</td><td class="num">91.1</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-21</td><td class="ctr">16/13</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">3/2</td><td class="ctr">40/36</td><td class="num">90.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-22</td><td class="ctr">16/7</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/5</td><td class="ctr">3/0</td><td class="ctr">40/24</td><td class="num">60.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-24</td><td class="ctr">16/16</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/8</td><td class="ctr">3/1</td><td class="ctr">40/37</td><td class="num">92.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-25</td><td class="ctr">16/12</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">3/0</td><td class="ctr">40/33</td><td class="num">82.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">18/18</td><td class="ctr">7/7</td><td class="ctr">7/7</td><td class="ctr">9/9</td><td class="ctr">4/2</td><td class="ctr">45/43</td><td class="num">95.6</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-27</td><td class="ctr">16/14</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/9</td><td class="ctr">3/2</td><td class="ctr">40/37</td><td class="num">92.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">18/14</td><td class="ctr">7/7</td><td class="ctr">7/7</td><td class="ctr">9/9</td><td class="ctr">4/4</td><td class="ctr">45/41</td><td class="num">91.1</td><td class="num">0</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-29</td><td class="ctr">16/10</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/2</td><td class="ctr">3/0</td><td class="ctr">40/24</td><td class="num">60.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-01</td><td class="ctr">16/11</td><td class="ctr">6/6</td><td class="ctr">6/6</td><td class="ctr">9/7</td><td class="ctr">3/0</td><td class="ctr">40/30</td><td class="num">75.0</td><td class="num">0</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-02</td><td class="ctr">16/5</td><td class="ctr">6/2</td><td class="ctr">6/0</td><td class="ctr">9/0</td><td class="ctr">3/0</td><td class="ctr">40/7</td><td class="num">17.5</td><td class="num">0</td><td class="ctr">상시</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section id="s9">
+  <h2>9. 결론</h2>
+
+  <h3>9.1 상시 fleet + Peak fleet 2단계 구조</h3>
+  <p>미배차 0 을 만드는 단일 고정 fleet 를 상시 fleet 로 보는 것은 과도하다. 평상시를 담당하는 <strong>상시 fleet</strong> + 피크 일자를 흡수하는 <strong>Peak fleet</strong> 의 2단계 구조가 자연스럽다.</p>
+
+  <h3>9.2 8T / 11T 제약 하에서 미배차 0 은 3.5T / 5T 증차로 흡수 가능</h3>
+  <p>1차 Peak fleet 검증에서는 세 변형 모두 3.5T + 5T + 8T + 11T 동시 만재 패턴으로 미배차가 남았다. 8T(9) / 11T(4) 제약을 그대로 둔 채 3.5T / 5T (필요 시 1T) 증차로 세 변형 모두 0 미배차에 도달. 1차 대비 fleet 증가는 +3 ~ +5대.</p>
+
+  <h3>9.3 운영안별 결과 비교</h3>
+  <table class="full">
+    <thead>
+      <tr><th>안</th><th class="num">총 routes</th><th class="num">평균 메저%</th><th class="num">lookup 운임</th><th class="num">fare/real</th><th>운영 철학</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="ctr">fare</td><td class="num">587</td><td class="num">82.0</td><td class="num">2.03억</td><td class="num">64.6%</td><td>비용 최적화 reference</td></tr>
+      <tr><td class="ctr">version_35_5</td><td class="num">607</td><td class="num">82.3</td><td class="num">2.08억</td><td class="num">66.1%</td><td>3.5T / 5T 주력</td></tr>
+      <tr><td class="ctr">version_1_35</td><td class="num">857</td><td class="num">85.5</td><td class="num">2.50억</td><td class="num">79.2%</td><td>1T / 3.5T 주력, 실 운임 패턴 근접</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><code>fare</code> / <code>version_35_5</code> 는 lookup 운임이 낮고 큰 차 통합 운영.</li>
+    <li><code>version_1_35</code> 는 routes 수가 많고 실 운임 (3.15억) 에 가장 근접 (79.2%).</li>
+  </ul>
+
+  <h3>9.4 잔존 이슈</h3>
+  <ul>
+    <li><code>version_1_35</code> 12-01 5T 1건 메저 101.39% (size mix 격차). 36번 v12_2pass 의 12-01 5T 104.7% case 와 동일한 본질. DELIVERY_OVERRIDES 추가 또는 multi-dim capacity 로 해소 가능.</li>
+    <li>다른 두 변형은 메저 100% 초과 0건.</li>
+  </ul>
+
+  <div class="callout">
+    <strong>요약 문장</strong> &nbsp; As-Is baseline 은 shipment 단위 실 운임을 날짜별로 합산한 3.15억이며, vroom lookup 운임은 route 거리 기준 단가표 bucket 운임이다. percentile 기반 fleet 후보안 (B(Standard) 상시 + C(Robust) Peak) 을 vroom replay 로 재검증한 결과, 1차에서는 세 변형 모두 Peak 일자에 3.5T + 5T + 8T + 11T 동시 만재 패턴으로 미배차가 남았다. 8T(9) / 11T(4) 를 고정한 채 Peak fleet 의 3.5T / 5T (필요 시 1T) 만 증차하여 세 변형 모두 <strong>미배차 0</strong> 에 도달하였다. 최종 운영안은 fleet 규모 순으로 <code>fare 28 / 39대</code>, <code>version_35_5 27 / 39대</code>, <code>version_1_35 40 / 45대</code> (상시 / Peak).
+  </div>
+</section>
+
+<section id="s10">
+  <h2>10. 참조 파일</h2>
+  <ul>
+    <li><code>03_result/38_jungbu_asis_operation.md</code> — As-Is 운영 baseline</li>
+    <li><code>03_result/37_jungbu_v12_3variants_lookup_fare.md</code> — 3 변형 lookup 운임</li>
+    <li><code>03_result/36_jungbu_vroom_route_v12_2pass_final_results.md</code> — v12_2pass 4 변형 결과</li>
+    <li><code>app/db/jungbu_real_fare_by_shipment_nov_dec.csv</code> — shipment 단위 실 운임</li>
+    <li><code>app/db/fare_2025_11.csv</code> — 중부 11월 단가표</li>
+    <li><code>app/cost/fare_lookup.py</code> — lookup 운임 계산 모듈</li>
+    <li><code>app/vroom_route_v12_2pass/README_b_standard_tests.md</code> — B(Standard) 테스트 설명</li>
+    <li><code>app/vroom_route_v12_2pass/{fare,version_35_5,version_1_35}_b_standard/_final_summary.csv</code> — 일자별 통합 summary</li>
+    <li><code>app/vroom_route_v12_2pass/{fare,version_35_5,version_1_35}_b_standard/_final_load_verify_by_route.csv</code> — route 메저값 검증</li>
+    <li><code>app/vroom-simulator/report/fleet_verified_report_from_vroom_replay.md</code> — 본 보고서 기반</li>
+    <li><code>app/vroom-simulator/report/fleet_verified_daily_input_vs_used.md</code> — 일자별 input/used 상세표</li>
+  </ul>
+</section>
+
+<footer>
+  중부 RDC vroom replay 검증 최종 보고서 / 2026-05-16
+</footer>
+
+</div>
+</body>
+</html>

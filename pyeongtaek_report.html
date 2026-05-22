@@ -266,7 +266,8 @@
     <li><a href="#s3">권역조절</a></li>
     <li><a href="#s4">평택 15% 축소 결과</a></li>
     <li><a href="#s5">계룡 병합 결과</a></li>
-    <li><a href="#s6">총평</a></li>
+    <li><a href="#s6">수송비용 변화</a></li>
+    <li><a href="#s7">총평</a></li>
   </ol>
 </nav>
 
@@ -1291,7 +1292,230 @@
 </section>
 
 <section id="s6">
-  <h2>6. 총평</h2>
+  <h2>6. 수송비용 변화</h2>
+  <p>
+    평택 RDC의 충청남도·충청북도 권역 출하 물량 중, 15% 축소안 기준 계룡 RDC로 이관되는 물량을 대상으로 수송 운임 변화를 시뮬레이션 하였다.</br>
+    해당 물량을 평택 RDC가 아닌 계룡 RDC가 공장에서 직접 수송할 경우, 수송 운임이 어떻게 변화하는지 예측한다.
+  </p>
+
+  <h3>6.1 분석 대상 — 충청권 출하 물량</h3>
+
+  <table class="full" style="font-size:0.88rem; max-width: 560px;">
+    <thead>
+      <tr><th>항목</th><th class="num">값</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>총 수량 (이관 대상 본수)</strong></td><td class="num"><strong>85,078 본</strong></td></tr>
+      <tr><td>Material (고유 SKU)</td><td class="num">1,110</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 산출 방법</h3>
+  <p>
+    동일한 cc 물량에 대해 가정이 다른 <strong>두 가지 독립된 방법</strong> 으로 수송 운임을 산출하고,
+    두 결과가 수렴하는 구간을 신뢰 구간으로 본다.
+  </p>
+
+  <table class="full" style="font-size:0.88rem;">
+    <thead>
+      <tr><th>구분</th><th>시나리오 1 — 정밀 계산</th><th>시나리오 2 — 날짜순 채움</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>요약</strong></td>
+        <td>이전 대상 물량을 실제 shipment 와 무관하게 재구성하여, Material 별로 가장 효율적인 톤급의 차량을 선택하는 방식</td>
+        <td>평택 도착 실적 ship 을 날짜순으로 누적해 이전 대상 물량을 채울 때까지 shipment를 선택했을 때의 운임 (현실 운영 반영 목적)</td>
+      </tr>
+      <tr>
+        <td><strong>가정</strong></td>
+        <td>Material 별로 가장 싼 톤급 선택. 공장 출하 schedule 무시.</td>
+        <td>출하 schedule. shipment 단위 누적</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6.3 산출 결과</h3>
+  <table class="full" style="font-size:0.88rem;">
+    <thead>
+      <tr>
+        <th>지표</th>
+        <th class="num">시나리오 1 (정밀)</th>
+        <th class="num">시나리오 2 (날짜순)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>선정 shipment</td>
+        <td class="num">— (수량만)</td>
+        <td class="num">116</td>
+      </tr>
+      <tr>
+        <td>cover 본수</td>
+        <td class="num">52,711</td>
+        <td class="num">55,550 <span style="color: var(--muted);">(+594 초과)</span></td>
+      </tr>
+      <tr>
+        <td><strong>평택 운임</strong></td>
+        <td class="num"><strong>₩ 25,463,059</strong></td>
+        <td class="num"><strong>₩ 32,569,020</strong></td>
+      </tr>
+      <tr>
+        <td><strong>계룡 운임</strong></td>
+        <td class="num"><strong>₩ 20,642,263</strong></td>
+        <td class="num"><strong>₩ 25,848,150</strong></td>
+      </tr>
+      <tr class="peak">
+        <td><strong>절감액</strong></td>
+        <td class="num"><strong>−₩ 4,820,796</strong></td>
+        <td class="num"><strong>−₩ 6,720,870</strong></td>
+      </tr>
+      <tr class="peak">
+        <td><strong>절감률</strong></td>
+        <td class="num"><strong>−18.93%</strong></td>
+        <td class="num"><strong>−20.64%</strong></td>
+      </tr>
+      <tr>
+        <td>본당 평균 운임 (평택)</td>
+        <td class="num">₩ 483 / 본</td>
+        <td class="num">₩ 587 / 본</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>시나리오 1 — 톤급별 트럭 대수 (만적 가정 / 52,711 본 기준)</h4>
+  <p style="margin: 0 0 0.4rem; color: var(--muted); font-size: 0.85rem;">
+    평택은 단가 최저인 18C 한 종류로만 묶이고, 계룡은 (출발지, 톤급) 단가가 분기되어 18C / 8T 가 혼합 선택됨.
+  </p>
+  <table class="full" style="font-size:0.88rem; max-width: 800px;">
+    <thead>
+      <tr>
+        <th>톤급</th>
+        <th class="num">평택 트럭 (대)</th>
+        <th class="num">평택 cc 본수</th>
+        <th class="num">평택 운임</th>
+        <th class="num">계룡 트럭 (대)</th>
+        <th class="num">계룡 cc 본수</th>
+        <th class="num">계룡 운임</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ctr">18C</td>
+        <td class="num">100</td>
+        <td class="num">52,711</td>
+        <td class="num">25,463,060</td>
+        <td class="num">59</td>
+        <td class="num">31,123</td>
+        <td class="num">11,724,311</td>
+      </tr>
+      <tr>
+        <td class="ctr">8T</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">55</td>
+        <td class="num">21,588</td>
+        <td class="num">8,917,953</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>합계</strong></td>
+        <td class="num"><strong>100</strong></td>
+        <td class="num"><strong>52,711</strong></td>
+        <td class="num"><strong>25,463,060</strong></td>
+        <td class="num"><strong>114</strong></td>
+        <td class="num"><strong>52,711</strong></td>
+        <td class="num"><strong>20,642,263</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>시나리오 2 — 톤급별 분포 (116 ship 의 내부 구성)</h4>
+  <table class="full" style="font-size:0.88rem; max-width: 800px;">
+    <thead>
+      <tr>
+        <th>톤급</th>
+        <th class="num">ship 수</th>
+        <th class="num">cc 본수</th>
+        <th class="num">평택 운임</th>
+        <th class="num">계룡 단가 합</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="ctr">8T</td><td class="num">45</td><td class="num">16,262</td><td class="num">11,241,380</td><td class="num">7,454,910</td></tr>
+      <tr><td class="ctr">18C</td><td class="num">32</td><td class="num">14,024</td><td class="num">8,469,870</td><td class="num">6,368,000</td></tr>
+      <tr><td class="ctr">45FT</td><td class="num">21</td><td class="num">17,449</td><td class="num">9,912,000</td><td class="num"><span style="color: var(--muted);">매칭 X</span></td></tr>
+      <tr><td class="ctr">40FT</td><td class="num">9</td><td class="num">4,310</td><td class="num"><span style="color: var(--muted);">NaN</span></td><td class="num"><span style="color: var(--muted);">NaN</span></td></tr>
+      <tr><td class="ctr">11C</td><td class="num">5</td><td class="num">2,460</td><td class="num">1,874,000</td><td class="num">1,212,000</td></tr>
+      <tr><td class="ctr">5T</td><td class="num">2</td><td class="num">605</td><td class="num">457,770</td><td class="num">287,240</td></tr>
+      <tr><td class="ctr">25C</td><td class="num">2</td><td class="num">440</td><td class="num">614,000</td><td class="num"><span style="color: var(--muted);">매칭 X</span></td></tr>
+      <tr>
+        <td class="ctr"><strong>합계</strong></td>
+        <td class="num"><strong>116</strong></td>
+        <td class="num"><strong>55,550</strong></td>
+        <td class="num"><strong>32,569,020</strong></td>
+        <td class="num"><strong>25,848,150</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6.4 권장 수송 운임 추정치</h3>
+  <p>
+    두 방법은 평택 운임에서 다소 차이를 보이지만,
+    <strong>절감률은 −19 ~ −21 %</strong> 범위로 수렴한다.
+  </p>
+
+  <table class="full" style="font-size:0.88rem; max-width: 700px;">
+    <thead>
+      <tr>
+        <th>구간</th>
+        <th class="num">평택 운임</th>
+        <th class="num">계룡 운임</th>
+        <th class="num">절감액</th>
+        <th class="num">절감률</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>시나리오 1</td>
+        <td class="num">25,463,059</td>
+        <td class="num">20,642,263</td>
+        <td class="num">−4,820,796</td>
+        <td class="num">−18.93%</td>
+      </tr>
+      <tr>
+        <td>시나리오 2</td>
+        <td class="num">32,569,020</td>
+        <td class="num">25,848,150</td>
+        <td class="num">−6,720,870</td>
+        <td class="num">−20.64%</td>
+      </tr>
+      <tr class="peak">
+        <td><strong>중심값 (평균)</strong></td>
+        <td class="num"><strong>≈ 29,016,040</strong></td>
+        <td class="num"><strong>≈ 23,245,207</strong></td>
+        <td class="num"><strong>≈ −5,770,833</strong></td>
+        <td class="num"><strong>≈ −20%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6.5 한계</h3>
+  <ul>
+    <li>
+      <strong>BHA·MD 등 약 35% (~30,000 본)</strong>는 수송 실적 데이터 상 이력이 존재하지 않아, 공장 출발지 및 사용 차량을 확인할 수 없음.
+      → 평택·계룡 어느 쪽도 운임 산출 불가.</br>
+      나머지 <strong>약 65% (52,711 ~ 55,550 본)</strong>에 대해서만 가능.
+    </li>
+    <li>
+      <strong>일부 (출발지, 톤급) 조합의 운반비 단가가 존재하지 않음</strong>
+      SKU·트럭 정보는 추적되지만 해당 조합의 운반비 단가가 데이터셋에 비어 있는 경우.
+      대표적으로 <strong>부산 CY (1140) 출발 45FT</strong> 운임이 확인되지 않음.
+    </li>
+  </ul>
+</section>
+
+<section id="s7">
+  <h2>7. 총평</h2>
 
   <p>
     평택RDC 물량 축소 시뮬레이션 결과, <strong>10% 수준까지는 이동거리·이동시간 증가율이 비교적 완만</strong>하게 증가하였으나,
