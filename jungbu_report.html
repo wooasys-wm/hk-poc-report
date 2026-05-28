@@ -181,15 +181,12 @@
   }
   .scenarios-grid {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 0.8rem;
     margin: 0.6rem 0 1.2rem;
-    align-items: stretch;
   }
   .scenarios-grid > .scenario-card {
-    flex: 1 1 320px;
-    min-width: 0;
-    max-width: 100%;
+    width: 100%;
     border: 1px solid var(--line);
     border-radius: 6px;
     padding: 0.6rem 0.8rem;
@@ -207,12 +204,11 @@
   .scenarios-grid > .scenario-card table {
     width: 100%;
     margin: 0;
-    font-size: 0.82rem;
     border-collapse: collapse;
   }
   .scenarios-grid > .scenario-card th,
   .scenarios-grid > .scenario-card td {
-    padding: 0.25rem 0.4rem;
+    padding: 0.35rem 0.5rem;
     white-space: nowrap;
   }
   footer {
@@ -286,27 +282,6 @@
     <li>동일 SKU 타이어 2 ~ 4개 (median 3개)</li>
     <li>평균 편도 210 km (Max 313 km)</li>
   </ul>
-
-  <h3>1.4 11월 톤급별 운임</h3>
-  <p>배송단가표의 11월 중부 RDC 건 사용. 총 <strong>5,309 deliveries</strong> (1 delivery = 1 ship-to) / <strong>315,120,400원</strong>.</p>
-  <table>
-    <thead>
-      <tr>
-        <th>truck</th>
-        <th class="num">배송지 수</th>
-        <th class="num">shipments</th>
-        <th class="num">총 운송비(원)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td class="ctr">1T</td><td class="num">2,202</td><td class="num">819</td><td class="num">135,625,100</td></tr>
-      <tr><td class="ctr">3.5T</td><td class="num">1,407</td><td class="num">417</td><td class="num">84,301,000</td></tr>
-      <tr><td class="ctr">5T</td><td class="num">472</td><td class="num">107</td><td class="num">28,359,300</td></tr>
-      <tr><td class="ctr">8T</td><td class="num">1,131</td><td class="num">159</td><td class="num">58,052,000</td></tr>
-      <tr><td class="ctr">11T</td><td class="num">97</td><td class="num">22</td><td class="num">8,783,000</td></tr>
-      <tr><td class="ctr"><strong>합계</strong></td><td class="num"><strong>5,309</strong></td><td class="num"><strong>1,524</strong></td><td class="num"><strong>315,120,400</strong></td></tr>
-    </tbody>
-  </table>
 </section>
 
 <section id="s2">
@@ -328,8 +303,9 @@
     <tbody>
       <tr><td>총 시·군·구 수</td><td class="num">202</td></tr>
       <tr><td>총 시·도 수</td><td class="num">16</td></tr>
-      <tr><td>총 배송지</td><td class="num">5,309</td></tr>
-      <tr><td>총 shipments</td><td class="num">1,524</td></tr>
+      <tr><td>총 ship-to party (배송지)</td><td class="num">944</td></tr>
+      <tr><td>총 delivery (배송 건수)</td><td class="num">5,309</td></tr>
+      <tr><td>총 shipment (차량 운행 수)</td><td class="num">1,524</td></tr>
       <tr><td>총 타이어 수량 (본)</td><td class="num">67,233</td></tr>
     </tbody>
   </table>
@@ -356,6 +332,7 @@
 
   <h3>2.1 톤급별 실 운임</h3>
   <table>
+    <p>배송단가표의 11월 중부 RDC 건 사용. 총 <strong>delivery 5,309 건</strong> (배송 묶음 단위 · ship-to party 944 곳) / <strong>315,120,400원</strong>.</p>
     <thead>
       <tr><th>톤급</th><th class="num">shipment 수</th><th class="num">총 운임(원)</th><th class="num">평균 운임 / shipment</th></tr>
     </thead>
@@ -434,7 +411,7 @@
   </table>
 
   <h3>4.2 운영안별 추정 운임 비용</h3>
-  <p>실단가 기준 단가표 bucket 으로 산정.</p>
+  <p>실단가 기준 단가표 금액 구간 으로 산정.</p>
 
   <div class="scenarios-grid">
     <div class="scenario-card">
