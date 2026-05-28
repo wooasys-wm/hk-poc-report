@@ -243,7 +243,6 @@
     <li><a href="#s5">검증 대상 차량 구성 (최종)</a></li>
     <li><a href="#s6">시뮬레이션 검증 결과</a></li>
     <li><a href="#s7">일자별 사용 차대수</a></li>
-    <li><a href="#s8">결론</a></li>
   </ol>
 </nav>
 
@@ -252,7 +251,7 @@
 
   <p>본 시뮬레이션은 실제 운영을 그대로 재현하기보다, 배송 물량과 권역 구조를 기준으로 <strong>적절한 차량 구성 및 필요 차량 대수 수준을 검토하기 위한 기준 시뮬레이션</strong> 이다.</p>
   <p>본 시뮬레이션 결과는 현재 운영 방식의 직접 재현이 아니라, <strong>shipment 를 해체하고 주문 단위 재배차를 기반으로 한 최적화 기준 시뮬레이션 결과</strong> 이다.</p>
-  <p>현재 운영은 shipment 가 권역 기준 묶음 중심으로 운영되는 반면, 본 시뮬레이션은 shipment 재조합 및 경로 (route) 재생성을 허용하는 방식으로 수행되었기 때문에, <strong>실제 운영 대비 더 높은 통합 효과</strong> 가 발생한다.</p>
+  <p>현재 운영은 shipment 가 권역 기준 묶음(운영가능한 묶음) 중심으로 운영되는 반면, 본 시뮬레이션은 shipment 재조합 및 경로 (route) 재생성을 허용하는 방식으로 수행되었기 때문에, <strong>실제 운영 대비 더 높은 통합 효과</strong> 가 발생한다.</p>
   <p>따라서 본 결과는 "즉시 적용 가능한 운영안" 이라기보다는, <strong>적절한 차량 구성 및 필요 차량 규모를 확인하기 위한 참고 지표</strong> 목적으로 해석해야 한다.</p>
 
   <h3>1.1 원본 데이터</h3>
@@ -350,14 +349,144 @@
       <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>1,524</strong></td><td class="num"><strong>315,120,400</strong></td><td class="num"><strong>206,772</strong></td></tr>
     </tbody>
   </table>
-  <p>As-Is 는 1T 비중이 압도적이며, 총액에서도 1T 가 가장 큰 비중을 차지함.</p>
+  <p><strong>As-Is 는 1T 비중이 압도적이며, 총액에서도 1T 가 가장 큰 비중을 차지함.</strong></p>
+
+  <h3>2.2 As-Is 재현 검증</h3>
+  <p>고객 제공 shipment 데이터를 기반으로 배송지를 구성하고, 실제 운영 이력과 동일한 조건으로 운행 시뮬레이션을 수행하였다.</p>
+  <p>이를 통해 시뮬레이션 결과의 총 운행거리 및 추정 운임을 실제 운영 데이터와 비교하였으며, 본 검토에서 사용한 운영안 및 차량 구성 방식이 현실 운영 수준을 어느 정도 재현 가능한지 검증하였다.</p>
+  <p>실제 운영 데이터와 시뮬레이션 결과 간에는 일부 편차가 존재하나, 전체적인 거리 및 운임 수준은 유사한 경향을 보였으며, 시뮬레이션 결과를 운영 검토용 참고 지표로 활용 가능한 수준으로 판단하였다.</p>
+  <p>거리: 도로 실측, 운임: 11월 중부 배송 단가표</p>
+  <table class="full">
+    <thead>
+      <tr>
+        <th rowspan="2">톤급</th>
+        <th rowspan="2" class="num">shipment</th>
+        <th colspan="3" class="num">총 거리 (km)</th>
+        <th colspan="3" class="num">총 운임 (원)</th>
+      </tr>
+      <tr>
+        <th class="num">실 운영</th>
+        <th class="num">재현</th>
+        <th class="num">편차 (%)</th>
+        <th class="num">실 운영</th>
+        <th class="num">재현</th>
+        <th class="num">편차 (%)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ctr">1T</td>
+        <td class="num">819</td>
+        <td class="num">163,140</td>
+        <td class="num">164,313</td>
+        <td class="num">+1,173 (+0.7%)</td>
+        <td class="num">135,625,100</td>
+        <td class="num">145,263,200</td>
+        <td class="num">+9,638,100 (+7.1%)</td>
+      </tr>
+      <tr>
+        <td class="ctr">3.5T</td>
+        <td class="num">417</td>
+        <td class="num">80,650</td>
+        <td class="num">81,110</td>
+        <td class="num">+460 (+0.6%)</td>
+        <td class="num">84,301,000</td>
+        <td class="num">89,893,900</td>
+        <td class="num">+5,592,900 (+6.6%)</td>
+      </tr>
+      <tr>
+        <td class="ctr">5T</td>
+        <td class="num">107</td>
+        <td class="num">20,280</td>
+        <td class="num">21,099</td>
+        <td class="num">+819 (+4.0%)</td>
+        <td class="num">28,359,300</td>
+        <td class="num">30,580,900</td>
+        <td class="num">+2,221,600 (+7.8%)</td>
+      </tr>
+      <tr>
+        <td class="ctr">8T</td>
+        <td class="num">159</td>
+        <td class="num">36,610</td>
+        <td class="num">44,217</td>
+        <td class="num"><span class="pill warn">+7,607 (+20.8%)</span></td>
+        <td class="num">58,052,000</td>
+        <td class="num">71,388,600</td>
+        <td class="num"><span class="pill warn">+13,336,600 (+23.0%)</span></td>
+      </tr>
+      <tr>
+        <td class="ctr">11T</td>
+        <td class="num">22</td>
+        <td class="num">5,150</td>
+        <td class="num">5,515</td>
+        <td class="num">+365 (+7.1%)</td>
+        <td class="num">8,783,000</td>
+        <td class="num">9,919,300</td>
+        <td class="num">+1,136,300 (+12.9%)</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>합</strong></td>
+        <td class="num"><strong>1,524</strong></td>
+        <td class="num"><strong>305,830</strong></td>
+        <td class="num"><strong>316,254</strong></td>
+        <td class="num"><strong>+10,424 (+3.4%)</strong></td>
+        <td class="num"><strong>315,120,400</strong></td>
+        <td class="num"><strong>347,045,900</strong></td>
+        <td class="num"><strong>+31,925,500 (+10.1%)</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><strong>동일 모집단 시뮬레이션</strong> shipment 수는 완벽 일치(1,524)</li>
+    <li><strong>전체 거리 편차 +3.4%</strong> (305,830 → 316,254 km). 1T·3.5T·5T·11T 는 +1~7% 이내, 8T 만 +20.8%.</li>
+    <li><strong>전체 운임 편차 +10.1%</strong> (3.151 억 → 3.470 억). 8T 에서 +23.0% 의 가장 큰 격차가 원인</li>
+    <li><strong>8T 편차의 원인</strong>
+      <ul>
+        <li>실운영 거리 = shipment 당 <strong>운행거리의 합</strong>.</li>
+        <li>재현 실험 거리 = <strong>도로 실측 (모든 배송지 순회)의 합</strong>.</li>
+        <li>8T 만 shipment 당 배송지가 평균<strong>6.0</strong> 으로 다른 톤급 (1T 2.5 / 3.5T 3.0 / 5T 3.7 / 11T 3.6) 대비 2 배 이상의 배송지를 포함함 → 추가 거리 비중이 결정적으로 큼.</li>
+        <li>shipment 당 평균: 실운영 230 km vs 재현 실험 278 km = <strong>+48 km × 159 routes = +7,607 km (≈ +20.8%)</strong>.</li>
+        <li>1T·3.5T·5T 는 shipment 덩 평균 배송지가 2~3개로 편차가 작게 적용됨 (+0.6~4.0%).</li>
+      </ul>
+    </li>
+    <li>결론: 동일 모집단에서 <strong>거리 ±3% / 운임 ±10% 수준으로 재현되었다.</strong>. 1T·3.5T·5T는 ±1~8% 수준의 편차를 보였으며, 8T는 +20%, 11T는 +7~13% 수준의 차이가 발생하였다. 본 검토의 4 시나리오 (실단가 / 3.5T·5T / 1T·3.5T / 8T·11T 유도) 는 모두 <strong>모두 동일한 데이터 및 시뮬레이션 조건</strong> 기준으로 선정되었기 때문에 <strong>운영안별 경향성과 상대적인 비교 지표로 활용 가능</strong>하다.</li>
+  </ul>
 </section>
 
 <section id="s3">
   <h2>3. 시나리오 (운영안 정의)</h2>
   <p>본 검토에서는 세 가지 cost 정책 시나리오를 정의한다.</p>
 
-  <h3>3.1 시나리오 개요</h3>
+  <h3>3.1 공통 운영 제약조건</h3>
+  <p>세 시나리오 모두에 공통으로 적용되는 운영 제약.</p>
+  <table class="full">
+    <colgroup>
+      <col style="width: 30%;">
+      <col style="width: 40%;">
+      <col style="width: 30%;">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>제약</th>
+        <th>내용</th>
+        <th>근거</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ctr"><strong>서울 진입 톤급 제한</strong></td>
+        <td>서울 지역은 <strong>1T / 3.5T</strong> 만 진입 허용. 5T / 8T / 11T 는 서울 ship-to 배송 불가.</td>
+        <td>실제 운영 반영</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>최대 운송 거리</strong></td>
+        <td>단일 route 의 총 운행 거리는 <strong>410 km</strong> 를 초과하지 않는다.</td>
+        <td>배송 단가표 기준 (최대 거리 구간)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3.2 시나리오 개요</h3>
   <table class="full">
     <colgroup>
       <col style="width: 18%;">
@@ -385,16 +514,22 @@
       <tr>
         <td class="ctr"><strong>1T/3.5T 유도</strong></td>
         <td>1T / 3.5T 우선 사용 유도</td>
-        <td>1T / 3.55T 적극 사용할 수 있도록 유도하는 시나리오.</td>
+        <td>1T / 3.5T 적극 사용할 수 있도록 유도하는 시나리오.</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>8T/11T 유도</strong></td>
+        <td>8T / 11T 우선 사용 유도</td>
+        <td>8T / 11T 대형차로 통합 운영을 유도하는 시나리오. 총 거리 최소화 목적.</td>
       </tr>
     </tbody>
   </table>
 
-  <h3>3.2 시나리오별 기대 효과</h3>
+  <h3>3.3 시나리오별 기대 효과</h3>
   <ul>
     <li><strong>실단가 기준</strong> — 실 단가표에 가장 가까운 cost. 8T / 11T 통합으로 routes 수 최소화.</li>
     <li><strong>3.5T/5T 유도</strong> — 3.5T / 5T 풀가동, 1T / 11T 사용 최소화. 중형 차 위주 운영안.</li>
     <li><strong>1T/3.5T 유도</strong> — 1T 풀가동, 분산 운영. routes 수는 가장 많지만 실 운임 패턴 (1T 중심 As-Is) 에 가장 가까움.</li>
+    <li><strong>8T/11T 유도</strong> — 8T / 11T 풀가동, 1T / 3.5T / 5T 사용 최소화. 대형 차 위주 운영안. routes / 총 거리 4 시나리오 중 최소. (실단가 기준 대비 +3% 수준).</li>
   </ul>
 </section>
 
@@ -424,12 +559,12 @@
       <div class="table-wrap"><table>
         <thead><tr><th>톤급</th><th class="num">운행횟수(routes)</th><th class="num">총 거리 (km)</th><th class="num">총 운임(원)</th><th class="num">평균 운임</th></tr></thead>
         <tbody>
-          <tr><td class="ctr">1T</td><td class="num">33</td><td class="num">5,683</td><td class="num">5,215,300</td><td class="num">158,039</td></tr>
-          <tr><td class="ctr">3.5T</td><td class="num">140</td><td class="num">33,070</td><td class="num">37,463,100</td><td class="num">267,594</td></tr>
-          <tr><td class="ctr">5T</td><td class="num">130</td><td class="num">30,925</td><td class="num">43,584,200</td><td class="num">335,263</td></tr>
-          <tr><td class="ctr">8T</td><td class="num">192</td><td class="num">46,585</td><td class="num">77,312,900</td><td class="num">402,671</td></tr>
-          <tr><td class="ctr">11T</td><td class="num">92</td><td class="num">22,167</td><td class="num">39,882,800</td><td class="num">433,509</td></tr>
-          <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>587</strong></td><td class="num"><strong>138,430</strong></td><td class="num"><strong>203,458,300</strong></td><td class="num">—</td></tr>
+          <tr><td class="ctr">1T</td><td class="num">33</td><td class="num">5,975</td><td class="num">5,456,900</td><td class="num">165,360</td></tr>
+          <tr><td class="ctr">3.5T</td><td class="num">140</td><td class="num">34,194</td><td class="num">38,629,000</td><td class="num">275,921</td></tr>
+          <tr><td class="ctr">5T</td><td class="num">130</td><td class="num">31,892</td><td class="num">44,824,800</td><td class="num">344,806</td></tr>
+          <tr><td class="ctr">8T</td><td class="num">192</td><td class="num">48,552</td><td class="num">80,602,100</td><td class="num">419,802</td></tr>
+          <tr><td class="ctr">11T</td><td class="num">92</td><td class="num">22,851</td><td class="num">40,690,200</td><td class="num">442,284</td></tr>
+          <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>587</strong></td><td class="num"><strong>143,463</strong></td><td class="num"><strong>210,203,000</strong></td><td class="num">—</td></tr>
         </tbody>
       </table></div>
     </div>
@@ -439,12 +574,12 @@
       <div class="table-wrap"><table>
         <thead><tr><th>톤급</th><th class="num">운행횟수(routes)</th><th class="num">총 거리 (km)</th><th class="num">총 운임(원)</th><th class="num">평균 운임</th></tr></thead>
         <tbody>
-          <tr><td class="ctr">1T</td><td class="num">18</td><td class="num">1,794</td><td class="num">1,913,200</td><td class="num">106,289</td></tr>
-          <tr><td class="ctr">3.5T</td><td class="num">168</td><td class="num">43,172</td><td class="num">48,576,700</td><td class="num">289,147</td></tr>
-          <tr><td class="ctr">5T</td><td class="num">165</td><td class="num">43,306</td><td class="num">59,966,300</td><td class="num">363,432</td></tr>
-          <tr><td class="ctr">8T</td><td class="num">192</td><td class="num">42,872</td><td class="num">72,399,800</td><td class="num">377,082</td></tr>
-          <tr><td class="ctr">11T</td><td class="num">64</td><td class="num">14,067</td><td class="num">25,441,000</td><td class="num">397,516</td></tr>
-          <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>607</strong></td><td class="num"><strong>145,211</strong></td><td class="num"><strong>208,297,000</strong></td><td class="num">—</td></tr>
+          <tr><td class="ctr">1T</td><td class="num">18</td><td class="num">1,856</td><td class="num">1,970,300</td><td class="num">109,461</td></tr>
+          <tr><td class="ctr">3.5T</td><td class="num">168</td><td class="num">44,724</td><td class="num">50,475,500</td><td class="num">300,449</td></tr>
+          <tr><td class="ctr">5T</td><td class="num">165</td><td class="num">44,659</td><td class="num">61,434,400</td><td class="num">372,329</td></tr>
+          <tr><td class="ctr">8T</td><td class="num">192</td><td class="num">44,402</td><td class="num">74,066,900</td><td class="num">385,765</td></tr>
+          <tr><td class="ctr">11T</td><td class="num">64</td><td class="num">14,624</td><td class="num">26,429,500</td><td class="num">412,960</td></tr>
+          <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>607</strong></td><td class="num"><strong>150,265</strong></td><td class="num"><strong>214,376,600</strong></td><td class="num">—</td></tr>
         </tbody>
       </table></div>
     </div>
@@ -454,12 +589,27 @@
       <div class="table-wrap"><table>
         <thead><tr><th>톤급</th><th class="num">운행횟수(routes)</th><th class="num">총 거리 (km)</th><th class="num">총 운임(원)</th><th class="num">평균 운임</th></tr></thead>
         <tbody>
-          <tr><td class="ctr">1T</td><td class="num">331</td><td class="num">74,892</td><td class="num">66,778,700</td><td class="num">201,748</td></tr>
-          <tr><td class="ctr">3.5T</td><td class="num">164</td><td class="num">50,002</td><td class="num">56,915,000</td><td class="num">347,043</td></tr>
-          <tr><td class="ctr">5T</td><td class="num">158</td><td class="num">37,976</td><td class="num">52,936,600</td><td class="num">335,042</td></tr>
-          <tr><td class="ctr">8T</td><td class="num">173</td><td class="num">36,122</td><td class="num">61,391,600</td><td class="num">354,865</td></tr>
-          <tr><td class="ctr">11T</td><td class="num">31</td><td class="num">6,262</td><td class="num">11,683,400</td><td class="num">376,884</td></tr>
-          <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>857</strong></td><td class="num"><strong>205,254</strong></td><td class="num"><strong>249,705,300</strong></td><td class="num">—</td></tr>
+          <tr><td class="ctr">1T</td><td class="num">331</td><td class="num">76,725</td><td class="num">68,209,200</td><td class="num">206,070</td></tr>
+          <tr><td class="ctr">3.5T</td><td class="num">164</td><td class="num">50,989</td><td class="num">57,995,700</td><td class="num">353,632</td></tr>
+          <tr><td class="ctr">5T</td><td class="num">158</td><td class="num">38,865</td><td class="num">54,109,100</td><td class="num">342,462</td></tr>
+          <tr><td class="ctr">8T</td><td class="num">173</td><td class="num">36,871</td><td class="num">62,412,100</td><td class="num">360,763</td></tr>
+          <tr><td class="ctr">11T</td><td class="num">31</td><td class="num">6,389</td><td class="num">11,827,300</td><td class="num">381,525</td></tr>
+          <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>857</strong></td><td class="num"><strong>209,839</strong></td><td class="num"><strong>254,553,400</strong></td><td class="num">—</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="scenario-card">
+      <h4>8T/11T 유도</h4>
+      <div class="table-wrap"><table>
+        <thead><tr><th>톤급</th><th class="num">운행횟수(routes)</th><th class="num">총 거리 (km)</th><th class="num">총 운임(원)</th><th class="num">평균 운임</th></tr></thead>
+        <tbody>
+          <tr><td class="ctr">1T</td><td class="num">7</td><td class="num">910</td><td class="num">868,100</td><td class="num">124,014</td></tr>
+          <tr><td class="ctr">3.5T</td><td class="num">41</td><td class="num">7,383</td><td class="num">8,319,000</td><td class="num">202,902</td></tr>
+          <tr><td class="ctr">5T</td><td class="num">30</td><td class="num">3,794</td><td class="num">6,386,500</td><td class="num">212,883</td></tr>
+          <tr><td class="ctr">8T</td><td class="num">239</td><td class="num">69,853</td><td class="num">114,957,100</td><td class="num">480,992</td></tr>
+          <tr><td class="ctr">11T</td><td class="num">178</td><td class="num">48,588</td><td class="num">86,044,600</td><td class="num">483,396</td></tr>
+          <tr><td class="ctr"><strong>합</strong></td><td class="num"><strong>495</strong></td><td class="num"><strong>130,528</strong></td><td class="num"><strong>216,575,300</strong></td><td class="num">—</td></tr>
         </tbody>
       </table></div>
     </div>
@@ -471,6 +621,7 @@
     <li><strong>실단가 기준</strong> 은 큰 차 통합이 강해 8T / 11T 비중이 커지고 총 운임이 가장 낮다.</li>
     <li><strong>3.5T/5T 유도</strong> 는 3.5T / 5T 비용 비중이 커진다.</li>
     <li><strong>1T/3.5T 유도</strong> 는 1T 분산 운영으로 1T 비용 비중이 다시 커지고, 총 운임비가 실 운임에 가장 가깝다.</li>
+    <li><strong>8T/11T 유도</strong> 는 8T / 11T 비중이 84% 로 압도. routes / 총 거리 4 시나리오 중 최소 (495 / 126,084km). 단가표상 큰 차 km 당 단가가 비싸 운임은 실단가 기준 대비 +3% 수준.</li>
   </ul>
 </section>
 
@@ -479,7 +630,7 @@
   <p>톤급 순서는 모두 <strong>1T / 3.5T / 5T / 8T / 11T</strong>.</p>
   <ul>
     <li><strong>상시 차량 구성안 (B)</strong> — 평상시 운영용. 27일 중 대부분 일자에 적용되는 기본 차량 구성. 피크 일자 (배송량 집중일)에 미배차건 발생</li>
-    <li><strong>Peak 차량 구성안 (C)</strong> — 피크 일자 (배송량 집중일) 에만 추가 가동되는 차량 구성. 상시 차량 구성안으로 미배차가 발생하는 일자에 한해 적용. 본 검토에서는 <strong>8T 9대 / 11T 4대 는 고정</strong>, 부족분은 3.5T / 5T (필요 시 1T) 증차로 흡수.</li>
+    <li><strong>Peak 차량 구성안 (C)</strong> — 피크 일자 (배송량 집중일) 에만 추가 가동되는 차량 구성. 상시 차량 구성안으로 미배차가 발생하는 일자에 한해 적용. 본 검토에서는 <strong>8T 9대 / 11T 4대 는 고정</strong>, 부족분은 3.5T / 5T (필요 시 1T) 증차로 흡수. <em>단, 8T/11T 유도안은 8T/11T 우선 cost 정책 반영으로 <strong>8T 12대 / 11T 8대 별도 고정</strong>.</em></li>
   </ul>
   <table class="full">
     <thead>
@@ -513,6 +664,13 @@
         <td>1T +1, 3.5T +1, 5T +1</td>
         <td>1T / 3.5T 주력 운영안</td>
       </tr>
+      <tr>
+        <td class="ctr"><strong>8T/11T 유도</strong></td>
+        <td class="ctr">1 / 3 / 2 / 12 / 8 = 26대</td>
+        <td class="ctr"><strong>3 / 4 / 3 / 12 / 8 = 30대</strong></td>
+        <td>1T +2, 3.5T +1, 5T +1</td>
+        <td>8T / 11T 주력 운영안 (8T 12 / 11T 8 별도 고정)</td>
+      </tr>
     </tbody>
   </table>
 </section>
@@ -536,29 +694,38 @@
       <tr>
         <td class="ctr"><strong>실단가 기준</strong></td>
         <td class="num">587</td>
-        <td class="num">138,430</td>
+        <td class="num">143,463</td>
         <td class="num"><span class="pill good">0</span></td>
         <td class="num"><span class="pill good">0</span></td>
         <td class="num">82.0</td>
-        <td class="num">203,458,300</td>
+        <td class="num">210,203,000</td>
       </tr>
       <tr>
         <td class="ctr"><strong>3.5T/5T 유도</strong></td>
         <td class="num">607</td>
-        <td class="num">145,210</td>
+        <td class="num">150,265</td>
         <td class="num"><span class="pill good">0</span></td>
         <td class="num"><span class="pill good">0</span></td>
         <td class="num">82.3</td>
-        <td class="num">208,297,000</td>
+        <td class="num">214,376,600</td>
       </tr>
       <tr>
         <td class="ctr"><strong>1T/3.5T 유도</strong></td>
         <td class="num">857</td>
-        <td class="num">205,254</td>
+        <td class="num">209,839</td>
         <td class="num"><span class="pill good">0</span></td>
         <td class="num"><span class="pill warn">1</span></td>
         <td class="num">85.5</td>
-        <td class="num">249,705,300</td>
+        <td class="num">254,553,400</td>
+      </tr>
+      <tr>
+        <td class="ctr"><strong>8T/11T 유도</strong></td>
+        <td class="num">495</td>
+        <td class="num">130,528</td>
+        <td class="num"><span class="pill good">0</span></td>
+        <td class="num"><span class="pill good">0</span></td>
+        <td class="num">75.7</td>
+        <td class="num">216,575,300</td>
       </tr>
     </tbody>
   </table>
@@ -588,6 +755,16 @@
     <li>최종 결과: 미배차 <strong>0건</strong>, 적재율 100% 초과 <strong>1건</strong> (12-01 5T_26 = 101.39%), 평균 적재율% <strong>85.5</strong></li>
     <li>1차 Peak (42대) 시 11-12(1), 11-28(1) 의 2건 미배차. 1T 11-12 17/17 만재였기 때문에 1T +1 함께 적용.</li>
     <li>실 운임 패턴에 가장 가까움</li>
+  </ul>
+
+  <h3>6.4 8T/11T 유도</h3>
+  <ul>
+    <li>상시 차량 구성: <code>1 / 3 / 2 / 12 / 8 = 26대</code></li>
+    <li>Peak 차량 구성 (최종): <code>3 / 4 / 3 / 12 / 8 = 30대</code> (상시 → Peak 증차: 1T +2, 3.5T +1, 5T +1)</li>
+    <li>최종 결과: 미배차 <strong>0건</strong>, 적재율 100% 초과 <strong>0건</strong>, 평균 적재율% <strong>75.7</strong> (적재기준표 11T 사이즈 일부 미매핑 영향으로 다른 시나리오 대비 낮게 산정. vroom 적재율 기반 재계산 시 ~82 수준).</li>
+    <li>상시 26대에서 미배차 발생 일자: <strong>11-28 1건</strong>. Peak fleet 적용으로 흡수.</li>
+    <li>8T (12대) / 11T (8대) 고정 룰을 본 시나리오 한정으로 별도 적용 (다른 시나리오는 8T 9 / 11T 4 고정).</li>
+    <li>routes / 총 거리 4 시나리오 중 최소 (495 / 130,529km). 운임은 단가표상 큰 차 km 당 단가가 비싸 실단가 기준 +3% 수준.</li>
   </ul>
 </section>
 
@@ -636,134 +813,160 @@
   </details>
 
   <details>
-    <summary>7.2 실단가 기준 (587 routes / 138,430 km)</summary>
+    <summary>7.2 실단가 기준 (587 routes / 143,461 km)</summary>
     <table class="full">
       <thead>
         <tr><th>date</th><th>1T</th><th>3.5T</th><th>5T</th><th>8T</th><th>11T</th><th>total</th><th class="num">거리(km)</th><th>구분</th></tr>
       </thead>
       <tbody>
-        <tr><td class="ctr">2025-11-01</td><td class="ctr">2</td><td class="ctr">3</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">8</td><td class="num">1,808</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-03</td><td class="ctr">1</td><td class="ctr">4</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">23</td><td class="num">4,922</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-04</td><td class="ctr">1</td><td class="ctr">5</td><td class="ctr">3</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">21</td><td class="num">4,398</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-05</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">26</td><td class="num">6,244</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">2</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">31</td><td class="num">6,938</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-07</td><td class="ctr">0</td><td class="ctr">4</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">23</td><td class="num">5,707</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-08</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">5</td><td class="ctr">2</td><td class="ctr">11</td><td class="num">3,123</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-10</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">3</td><td class="ctr">22</td><td class="num">5,196</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-11</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">22</td><td class="num">5,145</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">35</td><td class="num">7,884</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-13</td><td class="ctr">1</td><td class="ctr">5</td><td class="ctr">4</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">22</td><td class="num">5,630</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-14</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,445</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-15</td><td class="ctr">0</td><td class="ctr">5</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">0</td><td class="ctr">15</td><td class="num">3,687</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-17</td><td class="ctr">2</td><td class="ctr">5</td><td class="ctr">2</td><td class="ctr">7</td><td class="ctr">4</td><td class="ctr">20</td><td class="num">5,013</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-18</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">7</td><td class="ctr">4</td><td class="ctr">21</td><td class="num">5,486</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-19</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">4</td><td class="ctr">4</td><td class="ctr">18</td><td class="num">4,688</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">2</td><td class="ctr">7</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">30</td><td class="num">6,738</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-21</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,108</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-22</td><td class="ctr">3</td><td class="ctr">2</td><td class="ctr">3</td><td class="ctr">5</td><td class="ctr">4</td><td class="ctr">17</td><td class="num">3,779</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-24</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">5</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">23</td><td class="num">5,383</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-25</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">22</td><td class="num">5,617</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">0</td><td class="ctr">7</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">28</td><td class="num">5,880</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-27</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">5,754</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">37</td><td class="num">8,206</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-29</td><td class="ctr">1</td><td class="ctr">5</td><td class="ctr">3</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">16</td><td class="num">3,734</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-12-01</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">4</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">18</td><td class="num">4,261</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-12-02</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">3</td><td class="num">654</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr"><strong>합</strong></td><td class="ctr"><strong>33</strong></td><td class="ctr"><strong>140</strong></td><td class="ctr"><strong>130</strong></td><td class="ctr"><strong>192</strong></td><td class="ctr"><strong>92</strong></td><td class="ctr"><strong>587</strong></td><td class="num"><strong>138,430</strong></td><td class="ctr">—</td></tr>
+        <tr><td class="ctr">2025-11-01</td><td class="ctr">2</td><td class="ctr">3</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">8</td><td class="num">1,883</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-03</td><td class="ctr">1</td><td class="ctr">4</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">23</td><td class="num">5,083</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-04</td><td class="ctr">1</td><td class="ctr">5</td><td class="ctr">3</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">21</td><td class="num">4,541</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-05</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">26</td><td class="num">6,457</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">2</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">31</td><td class="num">7,199</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-07</td><td class="ctr">0</td><td class="ctr">4</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">23</td><td class="num">5,931</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-08</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">5</td><td class="ctr">2</td><td class="ctr">11</td><td class="num">3,226</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-10</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">3</td><td class="ctr">22</td><td class="num">5,383</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-11</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">22</td><td class="num">5,324</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">35</td><td class="num">8,111</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-13</td><td class="ctr">1</td><td class="ctr">5</td><td class="ctr">4</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">22</td><td class="num">5,845</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-14</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,791</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-15</td><td class="ctr">0</td><td class="ctr">5</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">0</td><td class="ctr">15</td><td class="num">3,764</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-17</td><td class="ctr">2</td><td class="ctr">5</td><td class="ctr">2</td><td class="ctr">7</td><td class="ctr">4</td><td class="ctr">20</td><td class="num">5,199</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-18</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">7</td><td class="ctr">4</td><td class="ctr">21</td><td class="num">5,623</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-19</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">4</td><td class="ctr">4</td><td class="ctr">18</td><td class="num">4,877</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">2</td><td class="ctr">7</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">30</td><td class="num">6,962</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-21</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,299</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-22</td><td class="ctr">3</td><td class="ctr">2</td><td class="ctr">3</td><td class="ctr">5</td><td class="ctr">4</td><td class="ctr">17</td><td class="num">3,866</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-24</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">5</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">23</td><td class="num">5,605</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-25</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">22</td><td class="num">5,783</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">0</td><td class="ctr">7</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">28</td><td class="num">6,164</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-27</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">5,951</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">37</td><td class="num">8,541</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-29</td><td class="ctr">1</td><td class="ctr">5</td><td class="ctr">3</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">16</td><td class="num">3,904</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-01</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">4</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">18</td><td class="num">4,489</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-02</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">3</td><td class="num">660</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr"><strong>합</strong></td><td class="ctr"><strong>33</strong></td><td class="ctr"><strong>140</strong></td><td class="ctr"><strong>130</strong></td><td class="ctr"><strong>192</strong></td><td class="ctr"><strong>92</strong></td><td class="ctr"><strong>587</strong></td><td class="num"><strong>143,461</strong></td><td class="ctr">—</td></tr>
       </tbody>
     </table>
   </details>
 
   <details>
-    <summary>7.3 3.5T/5T 유도 (607 routes / 145,210 km)</summary>
+    <summary>7.3 3.5T/5T 유도 (607 routes / 150,264 km)</summary>
     <table class="full">
       <thead>
         <tr><th>date</th><th>1T</th><th>3.5T</th><th>5T</th><th>8T</th><th>11T</th><th>total</th><th class="num">거리(km)</th><th>구분</th></tr>
       </thead>
       <tbody>
-        <tr><td class="ctr">2025-11-01</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">8</td><td class="num">1,809</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-03</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">4</td><td class="ctr">24</td><td class="num">5,040</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-04</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">3</td><td class="ctr">22</td><td class="num">4,696</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-05</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,370</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">1</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">30</td><td class="num">6,854</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-07</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">3</td><td class="ctr">24</td><td class="num">6,031</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-08</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">0</td><td class="ctr">15</td><td class="num">3,792</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-10</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">2</td><td class="ctr">22</td><td class="num">5,419</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-11</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">2</td><td class="ctr">22</td><td class="num">5,555</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">5</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">34</td><td class="num">7,809</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-13</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">3</td><td class="ctr">23</td><td class="num">6,003</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-14</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,450</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-15</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">0</td><td class="ctr">15</td><td class="num">3,878</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-17</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">2</td><td class="ctr">20</td><td class="num">5,240</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-18</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">2</td><td class="ctr">22</td><td class="num">5,635</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-19</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">20</td><td class="num">5,030</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">0</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">29</td><td class="num">7,202</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-21</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">26</td><td class="num">6,417</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-22</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">0</td><td class="ctr">19</td><td class="num">4,262</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-24</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">24</td><td class="num">5,527</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-25</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">23</td><td class="num">6,119</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">0</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">29</td><td class="num">6,113</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-27</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">5,871</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">10</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">39</td><td class="num">8,012</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-29</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">0</td><td class="ctr">16</td><td class="num">3,956</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-12-01</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">1</td><td class="ctr">21</td><td class="num">5,052</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-12-02</td><td class="ctr">0</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">5</td><td class="num">1,066</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr"><strong>합</strong></td><td class="ctr"><strong>18</strong></td><td class="ctr"><strong>168</strong></td><td class="ctr"><strong>165</strong></td><td class="ctr"><strong>192</strong></td><td class="ctr"><strong>64</strong></td><td class="ctr"><strong>607</strong></td><td class="num"><strong>145,211</strong></td><td class="ctr">—</td></tr>
+        <tr><td class="ctr">2025-11-01</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">8</td><td class="num">1,882</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-03</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">4</td><td class="ctr">24</td><td class="num">5,193</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-04</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">3</td><td class="ctr">22</td><td class="num">4,898</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-05</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,599</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">1</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">30</td><td class="num">7,134</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-07</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">3</td><td class="ctr">24</td><td class="num">6,300</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-08</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">0</td><td class="ctr">15</td><td class="num">3,927</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-10</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">2</td><td class="ctr">22</td><td class="num">5,582</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-11</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">2</td><td class="ctr">22</td><td class="num">5,698</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">5</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">34</td><td class="num">8,053</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-13</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">3</td><td class="ctr">23</td><td class="num">6,145</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-14</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,751</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-15</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">3</td><td class="ctr">0</td><td class="ctr">15</td><td class="num">3,959</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-17</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">2</td><td class="ctr">20</td><td class="num">5,410</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-18</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">2</td><td class="ctr">22</td><td class="num">5,816</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-19</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">20</td><td class="num">5,216</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">0</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">29</td><td class="num">7,409</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-21</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">26</td><td class="num">6,619</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-22</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">0</td><td class="ctr">19</td><td class="num">4,346</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-24</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">4</td><td class="ctr">24</td><td class="num">5,701</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-25</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">23</td><td class="num">6,280</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">0</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">29</td><td class="num">6,401</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-27</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">25</td><td class="num">6,141</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">10</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">39</td><td class="num">8,304</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-29</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">4</td><td class="ctr">0</td><td class="ctr">16</td><td class="num">4,098</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-01</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">1</td><td class="ctr">21</td><td class="num">5,332</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-02</td><td class="ctr">0</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">5</td><td class="num">1,070</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr"><strong>합</strong></td><td class="ctr"><strong>18</strong></td><td class="ctr"><strong>168</strong></td><td class="ctr"><strong>165</strong></td><td class="ctr"><strong>192</strong></td><td class="ctr"><strong>64</strong></td><td class="ctr"><strong>607</strong></td><td class="num"><strong>150,264</strong></td><td class="ctr">—</td></tr>
       </tbody>
     </table>
   </details>
 
   <details>
-    <summary>7.4 1T/3.5T 유도 (857 routes / 205,254 km)</summary>
+    <summary>7.4 1T/3.5T 유도 (857 routes / 209,843 km)</summary>
     <table class="full">
       <thead>
         <tr><th>date</th><th>1T</th><th>3.5T</th><th>5T</th><th>8T</th><th>11T</th><th>total</th><th class="num">거리(km)</th><th>구분</th></tr>
       </thead>
       <tbody>
-        <tr><td class="ctr">2025-11-01</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">9</td><td class="num">2,434</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-03</td><td class="ctr">14</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">3</td><td class="ctr">4</td><td class="ctr">35</td><td class="num">7,252</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-04</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">33</td><td class="num">7,233</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-05</td><td class="ctr">16</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">39</td><td class="num">9,052</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">15</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">3</td><td class="ctr">41</td><td class="num">9,820</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-07</td><td class="ctr">14</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">1</td><td class="ctr">36</td><td class="num">8,566</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-08</td><td class="ctr">8</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">21</td><td class="num">5,456</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-10</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">0</td><td class="ctr">32</td><td class="num">8,146</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-11</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">33</td><td class="num">7,735</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">13</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">40</td><td class="num">9,302</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-13</td><td class="ctr">15</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">35</td><td class="num">9,172</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-14</td><td class="ctr">14</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">37</td><td class="num">8,826</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-15</td><td class="ctr">10</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">23</td><td class="num">5,638</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-17</td><td class="ctr">11</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">0</td><td class="ctr">29</td><td class="num">7,311</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-18</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">32</td><td class="num">7,611</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-19</td><td class="ctr">12</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">29</td><td class="num">7,556</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">16</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">8</td><td class="ctr">3</td><td class="ctr">41</td><td class="num">10,131</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-21</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">36</td><td class="num">8,361</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-22</td><td class="ctr">7</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">24</td><td class="num">6,106</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-24</td><td class="ctr">16</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">1</td><td class="ctr">37</td><td class="num">8,731</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-11-25</td><td class="ctr">12</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">0</td><td class="ctr">33</td><td class="num">7,872</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">18</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">43</td><td class="num">9,325</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-27</td><td class="ctr">14</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">37</td><td class="num">8,845</td><td class="ctr">상시</td></tr>
-        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">14</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">41</td><td class="num">9,746</td><td class="ctr">Peak</td></tr>
-        <tr><td class="ctr">2025-11-29</td><td class="ctr">10</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">24</td><td class="num">6,078</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-12-01</td><td class="ctr">11</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">0</td><td class="ctr">30</td><td class="num">7,240</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr">2025-12-02</td><td class="ctr">5</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">7</td><td class="num">1,710</td><td class="ctr">상시</td></tr>
-        <tr><td class="ctr"><strong>합</strong></td><td class="ctr"><strong>331</strong></td><td class="ctr"><strong>164</strong></td><td class="ctr"><strong>158</strong></td><td class="ctr"><strong>173</strong></td><td class="ctr"><strong>31</strong></td><td class="ctr"><strong>857</strong></td><td class="num"><strong>205,254</strong></td><td class="ctr">—</td></tr>
+        <tr><td class="ctr">2025-11-01</td><td class="ctr">1</td><td class="ctr">6</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">9</td><td class="num">2,545</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-03</td><td class="ctr">14</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">3</td><td class="ctr">4</td><td class="ctr">35</td><td class="num">7,395</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-04</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">33</td><td class="num">7,372</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-05</td><td class="ctr">16</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">39</td><td class="num">9,251</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-06</td><td class="ctr">15</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">3</td><td class="ctr">41</td><td class="num">10,020</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-07</td><td class="ctr">14</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">1</td><td class="ctr">36</td><td class="num">8,674</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-08</td><td class="ctr">8</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">21</td><td class="num">5,535</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-10</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">0</td><td class="ctr">32</td><td class="num">8,353</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-11</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">33</td><td class="num">7,871</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-12</td><td class="ctr">13</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">40</td><td class="num">9,575</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-13</td><td class="ctr">15</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">0</td><td class="ctr">35</td><td class="num">9,356</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-14</td><td class="ctr">14</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">37</td><td class="num">8,997</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-15</td><td class="ctr">10</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">23</td><td class="num">5,749</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-17</td><td class="ctr">11</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">0</td><td class="ctr">29</td><td class="num">7,452</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-18</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">1</td><td class="ctr">32</td><td class="num">7,808</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-19</td><td class="ctr">12</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">29</td><td class="num">7,701</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-20</td><td class="ctr">16</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">8</td><td class="ctr">3</td><td class="ctr">41</td><td class="num">10,357</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-21</td><td class="ctr">13</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">36</td><td class="num">8,586</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-22</td><td class="ctr">7</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">5</td><td class="ctr">0</td><td class="ctr">24</td><td class="num">6,167</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-24</td><td class="ctr">16</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">8</td><td class="ctr">1</td><td class="ctr">37</td><td class="num">8,879</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-25</td><td class="ctr">12</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">0</td><td class="ctr">33</td><td class="num">8,013</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-26</td><td class="ctr">18</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">43</td><td class="num">9,594</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-27</td><td class="ctr">14</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">9</td><td class="ctr">2</td><td class="ctr">37</td><td class="num">9,119</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">14</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">9</td><td class="ctr">4</td><td class="ctr">41</td><td class="num">10,018</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-29</td><td class="ctr">10</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">24</td><td class="num">6,180</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-01</td><td class="ctr">11</td><td class="ctr">6</td><td class="ctr">6</td><td class="ctr">7</td><td class="ctr">0</td><td class="ctr">30</td><td class="num">7,553</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-02</td><td class="ctr">5</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">7</td><td class="num">1,723</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr"><strong>합</strong></td><td class="ctr"><strong>331</strong></td><td class="ctr"><strong>164</strong></td><td class="ctr"><strong>158</strong></td><td class="ctr"><strong>173</strong></td><td class="ctr"><strong>31</strong></td><td class="ctr"><strong>857</strong></td><td class="num"><strong>209,843</strong></td><td class="ctr">—</td></tr>
       </tbody>
     </table>
   </details>
-</section>
 
-<section id="s8">
-  <h2>8. 결론</h2>
-
-  <h3>8.1 상시 차량 구성 + Peak 차량 구성 2단계 구조</h3>
-  <p>미배차 0 을 만드는 단일 고정 차량 구성을 상시 차량 구성으로 보는 것은 과도하다. 평상시를 담당하는 <strong>상시 차량 구성</strong> + 피크 일자를 흡수하는 <strong>Peak 차량 구성</strong>의 2단계 구조가 자연스럽다.</p>
-
-  <h3>8.2 8T/11T 고정 제약 하, 중소형 차량 증차를 통한 미배차 해소</h3>
-  <p>1차 Peak 차량 구성 검증에서는 세 가지 변형안 모두 3.5T·5T·8T·11T 차량이 동시 만재 상태에 도달하며 미배차 발생함.</p>
-  <p>반면, 8T(9대) 및 11T(4대)의 상위 톤급 차량 제약을 유지한 상태에서 3.5T·5T 차량(필요 시 1T)을 추가 투입한 결과, 모든 변형안에서 미배차 0건 달성이 가능.</p>
-  <p>필요 증차 규모는 1차 검증 대비 +3~+5대 수준으로 확인됨.</p>
-
+  <details>
+    <summary>7.5 8T/11T 유도 (495 routes / 130,529 km)</summary>
+    <table class="full">
+      <thead>
+        <tr><th>date</th><th>1T</th><th>3.5T</th><th>5T</th><th>8T</th><th>11T</th><th>total</th><th class="num">거리(km)</th><th>구분</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="ctr">2025-11-01</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">6</td><td class="ctr">0</td><td class="ctr">7</td><td class="num">1,688</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-03</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">1</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">20</td><td class="num">4,718</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-04</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">2</td><td class="ctr">8</td><td class="ctr">6</td><td class="ctr">19</td><td class="num">4,304</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-05</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">11</td><td class="ctr">8</td><td class="ctr">21</td><td class="num">5,643</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-06</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">2</td><td class="ctr">12</td><td class="ctr">8</td><td class="ctr">25</td><td class="num">6,383</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-07</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">11</td><td class="ctr">8</td><td class="ctr">21</td><td class="num">5,672</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-08</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">5</td><td class="ctr">4</td><td class="ctr">10</td><td class="num">3,011</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-10</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">9</td><td class="ctr">7</td><td class="ctr">18</td><td class="num">5,071</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-11</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">2</td><td class="ctr">8</td><td class="ctr">8</td><td class="ctr">19</td><td class="num">4,987</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-12</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">2</td><td class="ctr">12</td><td class="ctr">8</td><td class="ctr">25</td><td class="num">6,677</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-13</td><td class="ctr">1</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">11</td><td class="ctr">7</td><td class="ctr">21</td><td class="num">5,559</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-14</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">2</td><td class="ctr">11</td><td class="ctr">8</td><td class="ctr">22</td><td class="num">5,762</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-15</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">8</td><td class="ctr">12</td><td class="num">3,441</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-17</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">1</td><td class="ctr">7</td><td class="ctr">7</td><td class="ctr">17</td><td class="num">4,892</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-18</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">1</td><td class="ctr">9</td><td class="ctr">7</td><td class="ctr">19</td><td class="num">5,437</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-19</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">1</td><td class="ctr">7</td><td class="ctr">6</td><td class="ctr">16</td><td class="num">4,643</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-20</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">2</td><td class="ctr">12</td><td class="ctr">8</td><td class="ctr">23</td><td class="num">6,084</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-21</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">10</td><td class="ctr">8</td><td class="ctr">20</td><td class="num">5,736</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-22</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">5</td><td class="ctr">7</td><td class="ctr">14</td><td class="num">3,542</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-24</td><td class="ctr">1</td><td class="ctr">2</td><td class="ctr">0</td><td class="ctr">9</td><td class="ctr">8</td><td class="ctr">20</td><td class="num">5,010</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-25</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">2</td><td class="ctr">11</td><td class="ctr">5</td><td class="ctr">21</td><td class="num">5,701</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-26</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">12</td><td class="ctr">8</td><td class="ctr">22</td><td class="num">5,304</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-11-27</td><td class="ctr">0</td><td class="ctr">3</td><td class="ctr">1</td><td class="ctr">10</td><td class="ctr">8</td><td class="ctr">22</td><td class="num">5,474</td><td class="ctr">상시</td></tr>
+        <tr class="peak"><td class="ctr label">2025-11-28</td><td class="ctr">1</td><td class="ctr">2</td><td class="ctr">3</td><td class="ctr">12</td><td class="ctr">8</td><td class="ctr">26</td><td class="num">7,021</td><td class="ctr">Peak</td></tr>
+        <tr><td class="ctr">2025-11-29</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">11</td><td class="ctr">2</td><td class="ctr">15</td><td class="num">3,727</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-01</td><td class="ctr">0</td><td class="ctr">0</td><td class="ctr">2</td><td class="ctr">8</td><td class="ctr">7</td><td class="ctr">17</td><td class="num">4,382</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr">2025-12-02</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">0</td><td class="ctr">1</td><td class="ctr">1</td><td class="ctr">3</td><td class="num">660</td><td class="ctr">상시</td></tr>
+        <tr><td class="ctr"><strong>합</strong></td><td class="ctr"><strong>7</strong></td><td class="ctr"><strong>41</strong></td><td class="ctr"><strong>30</strong></td><td class="ctr"><strong>239</strong></td><td class="ctr"><strong>178</strong></td><td class="ctr"><strong>495</strong></td><td class="num"><strong>130,529</strong></td><td class="ctr">—</td></tr>
+      </tbody>
+    </table>
+  </details>
 </section>
 
 <footer>
