@@ -224,6 +224,20 @@
     h2 { page-break-after: avoid; }
     table { page-break-inside: avoid; }
   }
+  /* fare bar chart */
+  .fare-chart { margin: 1rem 0 1.5rem 0; }
+  .fare-chart .legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .fare-chart .legend-item { display: flex; align-items: center; gap: 0.35rem; }
+  .fare-chart .legend-swatch { width: 14px; height: 14px; border-radius: 2px; display: inline-block; }
+  .fare-chart .row { display: grid; grid-template-columns: 120px 1fr 140px; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem; font-size: 0.85rem; }
+  .fare-chart .row .label { text-align: right; font-weight: 600; color: var(--ink); }
+  .fare-chart .row .label-asis { color: #b25400; }
+  .fare-chart .row .bar { display: flex; height: 28px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+  .fare-chart .row .seg { height: 100%; }
+  .fare-chart .row .total { text-align: left; color: var(--muted); }
+  .fare-chart .row .total strong { color: var(--ink); }
+  .fare-chart .axis { display: grid; grid-template-columns: 120px 1fr 140px; gap: 0.5rem; font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .fare-chart .axis .ticks { display: flex; justify-content: space-between; }
 </style>
 </head>
 <body>
@@ -253,6 +267,31 @@
   <p>본 시뮬레이션 결과는 현재 운영 방식의 직접 재현이 아니라, <strong>shipment 를 해체하고 주문 단위 재배차를 기반으로 한 최적화 기준 시뮬레이션 결과</strong> 이다.</p>
   <p>현재 운영은 shipment 가 권역 기준 묶음(운영가능한 묶음) 중심으로 운영되는 반면, 본 시뮬레이션은 shipment 재조합 및 경로 (route) 재생성을 허용하는 방식으로 수행되었기 때문에, <strong>실제 운영 대비 더 높은 통합 효과</strong> 가 발생한다.</p>
   <p>따라서 본 결과는 "즉시 적용 가능한 운영안" 이라기보다는, <strong>적절한 차량 구성 및 필요 차량 규모를 확인하기 위한 참고 지표</strong> 목적으로 해석해야 한다.</p>
+
+  <p>검토 결과, 실제 운임 구조를 기반으로 한 <strong>"실단가 기준" 운영안이 현재 운영 특성과 가장 유사한 차량 구성 경향</strong> 을 보였으며, 차량 대수·톤급 구성·Peak 대응 측면에서 <strong>운영 검토용 기준 시나리오 (reference scenario)</strong> 로 활용 가능할 것으로 판단된다.</p>
+
+  <p>본 결과는 <strong>배송지 단위 재배차 기반 시뮬레이션 결과</strong> 이며, 실제 운영의 shipment 구조 및 권역 운영 방식과는 차이가 존재한다. 따라서 실제 운영 적용 시에는 <strong>shipment 유지 조건, 권역 운영 방식, 출고 운영 제약</strong> 등을 추가 반영한 검토가 필요하다.</p>
+
+  <p>참고 지표로 제시하는 <strong>"실단가 기준" 운영안의 차량 구성</strong> 은 다음과 같다. 세부 비교는 <a href="#s5">5. 검증 대상 차량 구성</a> 참고.</p>
+  <table class="full">
+    <thead>
+      <tr>
+        <th>운영안</th>
+        <th>상시 차량 구성안</th>
+        <th>Peak 차량 구성안</th>
+        <th>상시 → Peak</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ctr"><strong>실단가 기준</strong></td>
+        <td class="ctr">3 / 6 / 6 / 9 / 4 = 28대<br><small style="color:var(--muted)">10.7 / 21.4 / 21.4 / 32.1 / 14.3 %</small></td>
+        <td class="ctr"><strong>10 / 8 / 8 / 9 / 4 = 39대</strong><br><small style="color:var(--muted)">25.6 / 20.5 / 20.5 / 23.1 / 10.3 %</small></td>
+        <td>3.5T +2, 5T +2</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:0.85rem;color:var(--muted)">톤급 순서: 1T / 3.5T / 5T / 8T / 11T. 상시 = 27일 중 대부분 일자에 적용되는 기본 구성, Peak = 배송량 집중 5일자 (11/06, 11/12, 11/20, 11/26, 11/28) 에만 적용되는 증차 구성.</p>
 
   <h3>1.1 원본 데이터</h3>
   <ul>
@@ -551,7 +590,72 @@
   </table>
 
   <h3>4.2 운영안별 추정 운임 비용</h3>
-  <p>실단가 기준 단가표 금액 구간 으로 산정.</p>
+  <p>실단가 기준 단가표 금액 구간 으로 산정. As-Is 실 운임 (3.151억) 과 4 시나리오 추정 운임을 톤급별 누적 막대로 한눈에 비교 — 막대 길이 = 총 운임, 색상 = 톤급 비중. 막대에 마우스 올리면 톤급별 금액·비중 확인 가능.</p>
+
+  <div class="fare-chart">
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#5DADE2"></span>1T</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#48C9B0"></span>3.5T</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#F5B041"></span>5T</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#E74C3C"></span>8T</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#8E44AD"></span>11T</span>
+    </div>
+    <div class="row">
+      <div class="label label-asis">As-Is</div>
+      <div class="bar" style="width: 100.00%">
+        <span class="seg" style="width:43.04%;background:#5DADE2" title="1T 135,625,100원 (43.0%)"></span>
+        <span class="seg" style="width:26.75%;background:#48C9B0" title="3.5T 84,301,000원 (26.8%)"></span>
+        <span class="seg" style="width:9.00%;background:#F5B041" title="5T 28,359,300원 (9.0%)"></span>
+        <span class="seg" style="width:18.42%;background:#E74C3C" title="8T 58,052,000원 (18.4%)"></span>
+        <span class="seg" style="width:2.79%;background:#8E44AD" title="11T 8,783,000원 (2.8%)"></span>
+      </div>
+      <div class="total"><strong>315,120,400</strong>원</div>
+    </div>
+    <div class="row">
+      <div class="label">실단가 기준</div>
+      <div class="bar" style="width: 66.71%">
+        <span class="seg" style="width:2.60%;background:#5DADE2" title="1T 5,456,900원 (2.6%)"></span>
+        <span class="seg" style="width:18.38%;background:#48C9B0" title="3.5T 38,629,000원 (18.4%)"></span>
+        <span class="seg" style="width:21.32%;background:#F5B041" title="5T 44,824,800원 (21.3%)"></span>
+        <span class="seg" style="width:38.34%;background:#E74C3C" title="8T 80,602,100원 (38.3%)"></span>
+        <span class="seg" style="width:19.36%;background:#8E44AD" title="11T 40,690,200원 (19.4%)"></span>
+      </div>
+      <div class="total"><strong>210,203,000</strong>원</div>
+    </div>
+    <div class="row">
+      <div class="label">3.5T/5T 유도</div>
+      <div class="bar" style="width: 68.03%">
+        <span class="seg" style="width:0.92%;background:#5DADE2" title="1T 1,970,300원 (0.9%)"></span>
+        <span class="seg" style="width:23.55%;background:#48C9B0" title="3.5T 50,475,500원 (23.5%)"></span>
+        <span class="seg" style="width:28.66%;background:#F5B041" title="5T 61,434,400원 (28.7%)"></span>
+        <span class="seg" style="width:34.55%;background:#E74C3C" title="8T 74,066,900원 (34.5%)"></span>
+        <span class="seg" style="width:12.33%;background:#8E44AD" title="11T 26,429,500원 (12.3%)"></span>
+      </div>
+      <div class="total"><strong>214,376,600</strong>원</div>
+    </div>
+    <div class="row">
+      <div class="label">1T/3.5T 유도</div>
+      <div class="bar" style="width: 80.78%">
+        <span class="seg" style="width:26.80%;background:#5DADE2" title="1T 68,209,200원 (26.8%)"></span>
+        <span class="seg" style="width:22.78%;background:#48C9B0" title="3.5T 57,995,700원 (22.8%)"></span>
+        <span class="seg" style="width:21.26%;background:#F5B041" title="5T 54,109,100원 (21.3%)"></span>
+        <span class="seg" style="width:24.52%;background:#E74C3C" title="8T 62,412,100원 (24.5%)"></span>
+        <span class="seg" style="width:4.65%;background:#8E44AD" title="11T 11,827,300원 (4.6%)"></span>
+      </div>
+      <div class="total"><strong>254,553,400</strong>원</div>
+    </div>
+    <div class="row">
+      <div class="label">8T/11T 유도</div>
+      <div class="bar" style="width: 68.73%">
+        <span class="seg" style="width:0.40%;background:#5DADE2" title="1T 868,100원 (0.4%)"></span>
+        <span class="seg" style="width:3.84%;background:#48C9B0" title="3.5T 8,319,000원 (3.8%)"></span>
+        <span class="seg" style="width:2.95%;background:#F5B041" title="5T 6,386,500원 (2.9%)"></span>
+        <span class="seg" style="width:53.08%;background:#E74C3C" title="8T 114,957,100원 (53.1%)"></span>
+        <span class="seg" style="width:39.73%;background:#8E44AD" title="11T 86,044,600원 (39.7%)"></span>
+      </div>
+      <div class="total"><strong>216,575,300</strong>원</div>
+    </div>
+  </div>
 
   <div class="scenarios-grid">
     <div class="scenario-card">
@@ -645,29 +749,29 @@
     <tbody>
       <tr>
         <td class="ctr"><strong>실단가 기준</strong></td>
-        <td class="ctr">3 / 6 / 6 / 9 / 4 = 28대</td>
-        <td class="ctr"><strong>10 / 8 / 8 / 9 / 4 = 39대</strong></td>
+        <td class="ctr"><strong>3 / 6 / 6 / 9 / 4 = 28대</strong><br><small style="color:var(--muted)">10.7 / 21.4 / 21.4 / 32.1 / 14.3 %</small></td>
+        <td class="ctr"><strong>10 / 8 / 8 / 9 / 4 = 39대</strong><br><small style="color:var(--muted)">25.6 / 20.5 / 20.5 / 23.1 / 10.3 %</small></td>
         <td>3.5T +2, 5T +2</td>
         <td>현실 운임 기준 비용 최적화안</td>
       </tr>
       <tr>
         <td class="ctr"><strong>3.5T/5T 유도</strong></td>
-        <td class="ctr">2 / 6 / 6 / 9 / 4 = 27대</td>
-        <td class="ctr"><strong>10 / 8 / 8 / 9 / 4 = 39대</strong></td>
+        <td class="ctr"><strong>2 / 6 / 6 / 9 / 4 = 27대</strong><br><small style="color:var(--muted)">7.4 / 22.2 / 22.2 / 33.3 / 14.8 %</small></td>
+        <td class="ctr"><strong>10 / 8 / 8 / 9 / 4 = 39대</strong><br><small style="color:var(--muted)">25.6 / 20.5 / 20.5 / 23.1 / 10.3 %</small></td>
         <td>1T +1, 3.5T +2, 5T +2</td>
         <td>3.5T / 5T 주력 운영안</td>
       </tr>
       <tr>
         <td class="ctr"><strong>1T/3.5T 유도</strong></td>
-        <td class="ctr">16 / 6 / 6 / 9 / 3 = 40대</td>
-        <td class="ctr"><strong>18 / 7 / 7 / 9 / 4 = 45대</strong></td>
+        <td class="ctr"><strong>16 / 6 / 6 / 9 / 3 = 40대</strong><br><small style="color:var(--muted)">40.0 / 15.0 / 15.0 / 22.5 / 7.5 %</small></td>
+        <td class="ctr"><strong>18 / 7 / 7 / 9 / 4 = 45대</strong><br><small style="color:var(--muted)">40.0 / 15.6 / 15.6 / 20.0 / 8.9 %</small></td>
         <td>1T +1, 3.5T +1, 5T +1</td>
         <td>1T / 3.5T 주력 운영안</td>
       </tr>
       <tr>
         <td class="ctr"><strong>8T/11T 유도</strong></td>
-        <td class="ctr">1 / 3 / 2 / 12 / 8 = 26대</td>
-        <td class="ctr"><strong>3 / 4 / 3 / 12 / 8 = 30대</strong></td>
+        <td class="ctr"><strong>1 / 3 / 2 / 12 / 8 = 26대</strong><br><small style="color:var(--muted)">3.8 / 11.5 / 7.7 / 46.2 / 30.8 %</small></td>
+        <td class="ctr"><strong>3 / 4 / 3 / 12 / 8 = 30대</strong><br><small style="color:var(--muted)">10.0 / 13.3 / 10.0 / 40.0 / 26.7 %</small></td>
         <td>1T +2, 3.5T +1, 5T +1</td>
         <td>8T / 11T 주력 운영안 (8T 12 / 11T 8 별도 고정)</td>
       </tr>
@@ -761,7 +865,7 @@
   <ul>
     <li>상시 차량 구성: <code>1 / 3 / 2 / 12 / 8 = 26대</code></li>
     <li>Peak 차량 구성 (최종): <code>3 / 4 / 3 / 12 / 8 = 30대</code> (상시 → Peak 증차: 1T +2, 3.5T +1, 5T +1)</li>
-    <li>최종 결과: 미배차 <strong>0건</strong>, 적재율 100% 초과 <strong>0건</strong>, 평균 적재율% <strong>75.7</strong> (적재기준표 11T 사이즈 일부 미매핑 영향으로 다른 시나리오 대비 낮게 산정. vroom 적재율 기반 재계산 시 ~82 수준).</li>
+    <li>최종 결과: 미배차 <strong>0건</strong>, 적재율 100% 초과 <strong>0건</strong>, 평균 적재율% <strong>75.7</strong> (적재기준표 11T 사이즈 일부 미매핑 영향으로 다른 시나리오 대비 낮게 산정. 적재율 재계산 시 ~82 수준).</li>
     <li>상시 26대에서 미배차 발생 일자: <strong>11-28 1건</strong>. Peak fleet 적용으로 흡수.</li>
     <li>8T (12대) / 11T (8대) 고정 룰을 본 시나리오 한정으로 별도 적용 (다른 시나리오는 8T 9 / 11T 4 고정).</li>
     <li>routes / 총 거리 4 시나리오 중 최소 (495 / 130,529km). 운임은 단가표상 큰 차 km 당 단가가 비싸 실단가 기준 +3% 수준.</li>
